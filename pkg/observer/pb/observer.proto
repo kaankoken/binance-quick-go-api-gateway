@@ -1,0 +1,101 @@
+syntax = "proto3";
+
+package observer;
+
+option go_package = "./pkg/observer";
+
+service ObserverService {
+    rpc Start(StartRequest) returns (StartResponse) {}
+    rpc Stop(StopRequest) returns (StopResponse) {}
+    rpc SetMAConfig(SetMAConfigRequest) returns (SetMAConfigResponse) {}
+    rpc SetVolumeConfig(SetVolumeConfigRequest) returns (SetVolumeConfigResponse) {}
+    rpc Status(StatusRequest) returns (StatusResponse) {}
+}
+
+/// Start Endpoint
+message StartRequest {}
+
+/// [status] is status code of the operation.
+/// [error] is a human-readable error message, if any.
+message StartResponse {
+    int64 status = 1;
+    string error = 2;
+}
+
+/// Stop Endpoint
+message StopRequest {}
+
+/// [status] is status code of the operation.
+/// [error] is a human-readable error message, if any.
+message StopResponse {
+    int64 status = 1;
+    string error = 2;
+}
+
+
+enum MovingAverageEnum {
+    MA9 = 0;
+    MA14 = 1;
+    MA20 = 2;
+    MA50 = 3;
+    MA100 = 4;
+}
+
+enum PeriodEnum {
+    PERIOD_15M = 0;
+    PERIOD_1H = 1;
+    PERIOD_4H = 2;
+    PERIOD_1D = 3;
+    PERIOD_50D = 4;
+}
+
+/// [moving_average] is the [moving averages] to use.
+/// [period] is the [periods] to use.
+message MAConfig {
+    MovingAverageEnum moving_average = 1;
+    PeriodEnum period = 2;
+}
+
+/// SetMAConfig Endpoint
+
+/// [ma_config] is the [moving averages] to use for calculation.
+/// [quote_asset] is the [quote currency] to use.
+message SetMAConfigRequest {
+    repeated MAConfig ma_config = 1;
+    string quote_asset = 2;
+}
+
+/// [status] is status code of the operation.
+/// [error] is a human-readable error message, if any.
+message SetMAConfigResponse {
+    int64 status = 1;
+    string error = 2;
+}
+
+/// SetVolumeConfig Endpoint
+
+/// [volume_config] is the [volume] calculation to use.
+message SetVolumeConfigRequest {
+    repeated MAConfig volume_config = 1;
+}
+
+/// [status] is status code of the operation.
+/// [error] is a human-readable error message, if any.
+message SetVolumeConfigResponse {
+    int64 status = 1;
+    string error = 2;
+}
+
+/// Status Endpoint
+message StatusRequest {}
+
+/// [status] is status code of the operation.
+/// [error] is a human-readable error message, if any.
+/// [healthz] is a health of the service.
+/// [uptime] is a time of the last request.
+message StatusResponse {
+    int64 status = 1;
+    string error = 2;
+    string healthz = 3;
+    string uptime = 4;
+}

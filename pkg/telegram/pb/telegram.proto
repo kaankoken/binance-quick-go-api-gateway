@@ -1,0 +1,61 @@
+syntax = "proto3";
+
+package telegram;
+
+option go_package = "./pkg/telegram";
+
+service TelegramService {
+    rpc Start(StartRequest) returns (StartResponse) {}
+    rpc Stop(StopRequest) returns (StopResponse) {}
+    rpc SendMessage(SendMessageRequest) returns (SendMessageResponse) {}
+    rpc Status(StatusRequest) returns (StatusResponse) {}
+}
+
+/// Start Endpoint
+message StartRequest {}
+
+/// [status] is status code of the operation.
+/// [error] is a human-readable error message, if any.
+message StartResponse {
+    int64 status = 1;
+    string error = 2;
+}
+
+/// Stop Endpoint
+message StopRequest {}
+
+/// [status] is status code of the operation.
+/// [error] is a human-readable error message, if any.
+message StopResponse {
+    int64 status = 1;
+    string error = 2;
+}
+
+/// SendMessage Endpoint
+
+/// [message] is the text to send.
+message SendMessageRequest {
+    string message = 1;
+}
+
+/// [status] is status code of the operation.
+/// [error] is a human-readable error message, if any.
+message SendMessageResponse {
+    int64 status = 1;
+    string error = 2;
+}
+
+/// Status Endpoint
+message StatusRequest {}
+
+/// [status] is status code of the operation.
+/// [error] is a human-readable error message, if any.
+/// [healthz] is a health of the service.
+/// [uptime] is a time of the last request.
+message StatusResponse {
+    int64 status = 1;
+    string error = 2;
+    string healthz = 3;
+    string uptime = 4;
+}
+
