@@ -58,4 +58,3 @@ message StatusResponse {
     string healthz = 3;
     string uptime = 4;
 }
-
