@@ -1,0 +1,14 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "initDevConfig",
+            "type": "shell",
+            "command": "cp ./config/envs/dev.env ./config/envs/.env",
+            "presentation": {
+                "reveal": "always",
+                "close": true
+            },
+        },
+    ]
+}
