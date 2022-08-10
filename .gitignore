@@ -1,0 +1,9 @@
+# Discarding the environment files
+**.env
+vendor/*
+
+# Keeping modules.txt for vendor
+!vendor/modules.txt
+
+# Discarding protobuf files
+**.pb.go
