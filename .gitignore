@@ -5,5 +5,8 @@ vendor/*
 # Keeping modules.txt for vendor
 !vendor/modules.txt
 
+# Keeping example.env for development
+!config/envs/example.env
+
 # Discarding protobuf files
 **.pb.go
