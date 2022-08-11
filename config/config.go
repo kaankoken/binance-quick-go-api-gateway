@@ -1,6 +1,9 @@
 package config
 
-import "github.com/spf13/viper"
+import (
+	"github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper"
+	"github.com/spf13/viper"
+)
 
 type Config struct {
 	Port          string `mapstructure:"PORT"`
@@ -10,19 +13,20 @@ type Config struct {
 }
 
 func LoadConfig() (c Config, err error) {
-	viper.AddConfigPath("./pkg/config/envs/")
-	viper.SetConfigName(".")
 	viper.SetConfigType("env")
+
+	viper.AddConfigPath("$PWD")
+	viper.AddConfigPath("$PWD/config/")
+	viper.AddConfigPath("$PWD/config/envs/")
+	viper.AddConfigPath(".")
 
 	viper.AutomaticEnv()
 
 	err = viper.ReadInConfig()
-
-	if err != nil {
-		return
-	}
+	helper.CheckError(err)
 
 	err = viper.Unmarshal(&c)
+	helper.CheckError(err)
 
 	return
 }
