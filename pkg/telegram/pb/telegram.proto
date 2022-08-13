@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package telegram;
 
-option go_package = "./pkg/telegram";
+option go_package = "./pkg/telegram/pb";
 
 service TelegramService {
     rpc Start(StartRequest) returns (StartResponse) {}
