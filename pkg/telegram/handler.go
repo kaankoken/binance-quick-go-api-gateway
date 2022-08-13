@@ -8,10 +8,11 @@ import (
 var Module = fx.Options(fx.Provide(NewHandler))
 
 type Handler struct {
-	Gin *gin.Engine
+	Gin     *gin.Engine
+	Context *gin.Context
 }
 
 func NewHandler() *Handler {
-	handler := Handler{Gin: gin.Default()}
+	handler := Handler{Gin: gin.Default(), Context: &gin.Context{}}
 	return &handler
 }
