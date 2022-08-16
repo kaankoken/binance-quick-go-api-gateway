@@ -10,6 +10,8 @@ var Module = fx.Options(fx.Provide(LoadConfig))
 
 type Config struct {
 	Port           string `mapstructure:"PORT"`
+	Flavor         string `mapstructure:"FLAVOR"`
+	Mode           string `mapstructure:"GIN_MODE"`
 	AuthSvcUrl     string `mapstructure:"AUTH_SVC_URL"`
 	ObserverSvcUrl string `mapstructure:"OBSERVER_SVC_URL"`
 	TelegramSvcUrl string `mapstructure:"TELEGRAM_SVC_URL"`
