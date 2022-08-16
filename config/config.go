@@ -6,16 +6,16 @@ import (
 	"go.uber.org/fx"
 )
 
-var Module = fx.Options(fx.Invoke(LoadConfig))
+var Module = fx.Options(fx.Provide(LoadConfig))
 
 type Config struct {
-	Port          string `mapstructure:"PORT"`
-	AuthSvcUrl    string `mapstructure:"AUTH_SVC_URL"`
-	ProductSvcUrl string `mapstructure:"OBSERVER_SVC_URL"`
-	OrderSvcUrl   string `mapstructure:"TELEGRAM_SVC_URL"`
+	Port           string `mapstructure:"PORT"`
+	AuthSvcUrl     string `mapstructure:"AUTH_SVC_URL"`
+	ObserverSvcUrl string `mapstructure:"OBSERVER_SVC_URL"`
+	TelegramSvcUrl string `mapstructure:"TELEGRAM_SVC_URL"`
 }
 
-func LoadConfig(handler *helper.Handler) (c Config, err error) {
+func LoadConfig(handler *helper.Handler) (c *Config, err error) {
 	viper.SetConfigType("env")
 
 	viper.AddConfigPath("$PWD")
@@ -25,10 +25,10 @@ func LoadConfig(handler *helper.Handler) (c Config, err error) {
 
 	viper.AutomaticEnv()
 	err = viper.ReadInConfig()
-	handler.Logger(err, nil)
+	handler.Error(err, nil)
 
 	err = viper.Unmarshal(&c)
-	handler.Logger(err, nil)
+	handler.Error(err, nil)
 
 	return
 }
