@@ -5,14 +5,13 @@ import (
 	"go.uber.org/fx"
 )
 
-var Module = fx.Options(fx.Provide(NewHandler))
+var EngineModule = fx.Options(fx.Provide(NewHandler))
 
 type Handler struct {
-	Gin     *gin.Engine
-	Context *gin.Context
+	Gin *gin.Engine
 }
 
 func NewHandler() *Handler {
-	handler := Handler{Gin: gin.Default(), Context: &gin.Context{}}
+	handler := Handler{Gin: gin.Default()}
 	return &handler
 }
