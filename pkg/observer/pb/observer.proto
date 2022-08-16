@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package observer;
 
-option go_package = "./pkg/observer";
+option go_package = "./pkg/observer/pb";
 
 service ObserverService {
     rpc Start(StartRequest) returns (StartResponse) {}
