@@ -1,6 +1,8 @@
 package helper
 
 import (
+	"fmt"
+
 	log "github.com/sirupsen/logrus"
 	"go.uber.org/fx"
 )
@@ -15,22 +17,28 @@ func SetLoggerFormat() {
 }
 
 type Handler struct {
-	Error func(error, *func())
-	Info  func(msg string)
+	Error func(error, *func()) error
+	Info  func(msg string) string
 }
 
 func Logger() *Handler {
 	return &Handler{
-		Error: func(err error, f *func()) {
+		Error: func(err error, f *func()) error {
 			if err != nil {
-				log.Fatalln("Binance-Quick-Go-Api-Gateway -> ", err.Error())
+				log.Errorf("Binance-Quick-Go-Api-Gateway -> ", err.Error())
 				if f != nil {
 					(*f)()
 				}
+
+				return fmt.Errorf("Binance-Quick-Go-Api-Gateway -> " + err.Error())
 			}
+
+			return nil
 		},
-		Info: func(msg string) {
+		Info: func(msg string) string {
 			log.Infoln("Binance-Quick-Go-Api-Gateway -> ", msg)
+
+			return fmt.Sprintf("Binance-Quick-Go-Api-Gateway -> " + msg)
 		},
 	}
 }
