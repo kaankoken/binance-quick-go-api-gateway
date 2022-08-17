@@ -2,6 +2,7 @@ package telegram
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/kaankoken/binance-quick-go-api-gateway/config"
 	"go.uber.org/fx"
 )
 
@@ -11,7 +12,9 @@ type Handler struct {
 	Gin *gin.Engine
 }
 
-func NewHandler() *Handler {
+func NewHandler(config *config.Config) *Handler {
+	gin.SetMode(config.Mode)
+
 	handler := Handler{Gin: gin.Default()}
 	return &handler
 }

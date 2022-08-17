@@ -10,3 +10,6 @@ vendor/*
 
 # Discarding protobuf files
 **.pb.go
+
+# Discarding the .log files
+**.log
