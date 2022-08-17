@@ -5,6 +5,9 @@ build:
 proto:
 	bash ./scripts/generate_protos.sh
 
+run-vendor:
+	bash ./scripts/run_vendor.sh
+
 server-dev-debug:
 	bash ./scripts/change_flavor.sh --flavor dev --debug
 	go run cmd/main.go 
@@ -21,5 +24,5 @@ server-prod-release:
 	bash ./scripts/change_flavor.sh --flavor prod --release
 	go run cmd/main.go
 
-run-vendor:
-	bash ./scripts/run_vendor.sh
+test:
+	bash ./scripts/run_tests.sh
