@@ -1,12 +1,11 @@
 package config
 
 import (
-	"github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper"
 	"github.com/spf13/viper"
 	"go.uber.org/fx"
 )
 
-var Module = fx.Options(fx.Provide(LoadConfig))
+var Module = fx.Options(fx.Provide(loadConfig))
 
 type Config struct {
 	Port           string `mapstructure:"PORT"`
@@ -17,7 +16,7 @@ type Config struct {
 	TelegramSvcUrl string `mapstructure:"TELEGRAM_SVC_URL"`
 }
 
-func LoadConfig(handler *helper.Handler) (c *Config, err error) {
+func loadConfig() (c *Config, err error) {
 	viper.SetConfigType("env")
 
 	viper.AddConfigPath("$PWD")
@@ -26,11 +25,16 @@ func LoadConfig(handler *helper.Handler) (c *Config, err error) {
 	viper.AddConfigPath(".")
 
 	viper.AutomaticEnv()
+
 	err = viper.ReadInConfig()
-	handler.Error(err, nil)
+	if err != nil {
+		return nil, err
+	}
 
 	err = viper.Unmarshal(&c)
-	handler.Error(err, nil)
+	if err != nil {
+		return nil, err
+	}
 
-	return
+	return c, nil
 }
