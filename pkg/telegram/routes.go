@@ -2,25 +2,30 @@ package telegram
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/kaankoken/binance-quick-go-api-gateway/config"
+	"github.com/kaankoken/binance-quick-go-api-gateway/pkg"
 	"github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper"
+	"github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram/pb"
 	"github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram/routes"
 	"go.uber.org/fx"
 )
 
-var RouteModule = fx.Options(fx.Invoke(RegisterRoutes))
+var RouteModule = fx.Options(fx.Provide(initialize), fx.Invoke(registerRoutes))
 
-func RegisterRoutes(handler *Handler, config *config.Config, logger *helper.Handler) {
+func initialize(client pb.TelegramServiceClient, logger *helper.LogHandler) *ServiceClient {
 	svc := &ServiceClient{
-		Client: InitServiceClient(config, logger),
+		Client: client,
 		Logger: logger,
 	}
 
+	return svc
+}
+
+func registerRoutes(client *ServiceClient, handler *pkg.Handler) {
 	routes := handler.Gin.Group("/telegram")
-	routes.POST("/", svc.Start)
-	routes.POST("/healthz", svc.Status)
-	routes.POST("/message", svc.SendMessage)
-	routes.POST("/stop", svc.Stop)
+	routes.POST("/", client.Start)
+	routes.POST("/healthz", client.Status)
+	routes.POST("/message", client.SendMessage)
+	routes.POST("/stop", client.Stop)
 
 	// TODO: will be deleted preserved for test purposes only
 	routes.GET("/test", func(ctx *gin.Context) {

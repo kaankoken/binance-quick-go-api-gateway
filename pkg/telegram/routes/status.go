@@ -11,19 +11,19 @@ import (
 
 type StatusMessageBody struct{}
 
-func Status(ctx *gin.Context, logger *helper.Handler, client pb.TelegramServiceClient) {
+func Status(ctx *gin.Context, logger *helper.LogHandler, client pb.TelegramServiceClient) {
 	body := StatusMessageBody{}
 
 	err := ctx.BindJSON(&body)
 
 	bindingCallback := func() { ctx.AbortWithError(http.StatusBadRequest, err) }
-	logger.Error(err, &bindingCallback)
+	logger.ErrorWithCallback(err, bindingCallback)
 
 	res, err := client.Status(context.Background(), &pb.StatusRequest{})
 
 	requestCallback := func() { ctx.AbortWithError(http.StatusBadGateway, err) }
 
-	logger.Error(err, &requestCallback)
+	logger.ErrorWithCallback(err, requestCallback)
 
 	ctx.JSON(http.StatusOK, &res)
 }

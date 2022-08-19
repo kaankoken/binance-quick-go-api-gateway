@@ -1,0 +1,9 @@
+mode: atomic
+github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/logger.go:15.24,17.2 1 1
+github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/logger.go:24.24,26.43 1 4
+github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/logger.go:26.43,27.18 1 3
+github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/logger.go:36.4,36.14 1 1
+github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/logger.go:27.18,29.17 2 2
+github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/logger.go:33.5,33.72 1 2
+github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/logger.go:29.17,31.6 1 1
+github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/logger.go:38.33,42.4 2 1

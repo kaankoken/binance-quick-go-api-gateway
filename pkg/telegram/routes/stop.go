@@ -11,18 +11,18 @@ import (
 
 type StopRequestBody struct{}
 
-func Stop(ctx *gin.Context, logger *helper.Handler, client pb.TelegramServiceClient) {
+func Stop(ctx *gin.Context, logger *helper.LogHandler, client pb.TelegramServiceClient) {
 	body := StopRequestBody{}
 
 	err := ctx.BindJSON(&body)
 
 	bindingCallback := func() { ctx.AbortWithError(http.StatusBadRequest, err) }
-	logger.Error(err, &bindingCallback)
+	logger.ErrorWithCallback(err, bindingCallback)
 
 	res, err := client.Stop(context.Background(), &pb.StopRequest{})
 
 	requestCallback := func() { ctx.AbortWithError(http.StatusBadGateway, err) }
-	logger.Error(err, &requestCallback)
+	logger.ErrorWithCallback(err, requestCallback)
 
 	ctx.JSON(http.StatusOK, &res)
 }

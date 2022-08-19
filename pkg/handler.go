@@ -1,4 +1,4 @@
-package telegram
+package pkg
 
 import (
 	"github.com/gin-gonic/gin"
@@ -6,13 +6,13 @@ import (
 	"go.uber.org/fx"
 )
 
-var EngineModule = fx.Options(fx.Provide(NewHandler))
+var EngineModule = fx.Options(fx.Provide(newHandler))
 
 type Handler struct {
 	Gin *gin.Engine
 }
 
-func NewHandler(config *config.Config) *Handler {
+func newHandler(config *config.Config) *Handler {
 	gin.SetMode(config.Mode)
 
 	handler := Handler{Gin: gin.Default()}
