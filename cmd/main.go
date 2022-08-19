@@ -6,23 +6,25 @@ import (
 	"go.uber.org/fx"
 
 	"github.com/kaankoken/binance-quick-go-api-gateway/config"
+	"github.com/kaankoken/binance-quick-go-api-gateway/pkg"
 	"github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper"
 	"github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram"
 )
 
 func main() {
 	app := fx.New(
-		helper.Module,
 		config.Module,
-		telegram.EngineModule,
+		telegram.ClientModule,
+		pkg.EngineModule,
 		telegram.RouteModule,
+		helper.LoggerModule,
 		fx.Invoke(registerHooks),
 	)
 
 	app.Run()
 }
 
-func registerHooks(lifecycle fx.Lifecycle, h *telegram.Handler, config *config.Config, logger *helper.Handler) {
+func registerHooks(lifecycle fx.Lifecycle, h *pkg.Handler, config *config.Config, logger *helper.LogHandler) {
 	lifecycle.Append(
 		fx.Hook{
 			OnStart: func(context.Context) error {
