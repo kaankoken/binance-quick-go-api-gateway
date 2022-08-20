@@ -33,8 +33,8 @@ func initialize(c *config.Config) *LogHandler {
 	var d logHandler
 	var r logHandler
 
-	d = dLogger{}
-	r = rLogger{}
+	d = DLogger{}
+	r = RLogger{}
 
 	return &LogHandler{debug: &d, release: &r, config: c}
 }
