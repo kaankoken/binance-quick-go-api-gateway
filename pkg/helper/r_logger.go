@@ -15,19 +15,19 @@ type FxLogger struct {
 }
 
 var ReleaseModule = fx.Options(
-	fx.Provide(initializeLogger, initializeLoggerPtr),
+	fx.Provide(InitializeLogger, initializeLoggerPtr),
 	fx.WithLogger(func(logger *zap.Logger) fxevent.Logger {
 		return &FxLogger{Logger: logger}
 	}),
 )
 
 var (
-	localLogger *zap.Logger
+	LocalLogger *zap.Logger
 )
 
-type rLogger struct{}
+type RLogger struct{}
 
-func initializeLogger() zap.Logger {
+func InitializeLogger() zap.Logger {
 	config := zap.NewProductionEncoderConfig()
 	config.EncodeTime = zapcore.ISO8601TimeEncoder
 	fileEncoder := zapcore.NewJSONEncoder(config)
@@ -40,18 +40,18 @@ func initializeLogger() zap.Logger {
 		zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), defaultLogLevel),
 	)
 
-	localLogger = zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
+	LocalLogger = zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
 
-	return *localLogger
+	return *zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
 }
 
 func initializeLoggerPtr(logger zap.Logger) *zap.Logger {
 	return &logger
 }
 
-func (logger rLogger) Error(err error) error {
+func (logger RLogger) Error(err error) error {
 	if err != nil {
-		localLogger.Error(tag + err.Error())
+		LocalLogger.Error(tag + err.Error())
 
 		return fmt.Errorf(tag + err.Error())
 	}
@@ -59,10 +59,10 @@ func (logger rLogger) Error(err error) error {
 	return nil
 }
 
-func (logger rLogger) ErrorWithCallback(err error, f func()) error {
+func (logger RLogger) ErrorWithCallback(err error, f func()) error {
 	if err != nil {
 		f()
-		localLogger.Error(tag + err.Error())
+		LocalLogger.Error(tag + err.Error())
 
 		return fmt.Errorf(tag + err.Error())
 	}
@@ -70,15 +70,15 @@ func (logger rLogger) ErrorWithCallback(err error, f func()) error {
 	return nil
 }
 
-func (logger rLogger) Info(msg string) string {
-	localLogger.Info(tag + msg)
+func (logger RLogger) Info(msg string) string {
+	LocalLogger.Info(tag + msg)
 
 	return fmt.Sprintf(tag + msg)
 }
 
-func (logger rLogger) InfoWithCallback(msg string, f func()) string {
+func (logger RLogger) InfoWithCallback(msg string, f func()) string {
 	f()
-	localLogger.Info(tag + msg)
+	LocalLogger.Info(tag + msg)
 
 	return fmt.Sprintf(tag + msg)
 }
