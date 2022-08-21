@@ -80,7 +80,7 @@ func TestConfig(t *testing.T) {
 	})
 }
 
-func TestConfigFx(t *testing.T) {
+func TestConfigWithFx(t *testing.T) {
 	t.Run("config-fx", func(t *testing.T) {
 		var data *config.Config
 		var g fx.DotGraph
