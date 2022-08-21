@@ -10,24 +10,18 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-type FxLogger struct {
+type RLogger struct {
 	Logger *zap.Logger
 }
 
 var ReleaseModule = fx.Options(
-	fx.Provide(InitializeLogger, initializeLoggerPtr),
+	fx.Provide(InitializeLogger, InitializeLoggerPtr),
 	fx.WithLogger(func(logger *zap.Logger) fxevent.Logger {
-		return &FxLogger{Logger: logger}
+		return &RLogger{Logger: logger}
 	}),
 )
 
-var (
-	LocalLogger *zap.Logger
-)
-
-type RLogger struct{}
-
-func InitializeLogger() zap.Logger {
+func InitializeLogger() *zap.Logger {
 	config := zap.NewProductionEncoderConfig()
 	config.EncodeTime = zapcore.ISO8601TimeEncoder
 	fileEncoder := zapcore.NewJSONEncoder(config)
@@ -40,18 +34,16 @@ func InitializeLogger() zap.Logger {
 		zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), defaultLogLevel),
 	)
 
-	LocalLogger = zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
-
-	return *zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
+	return zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
 }
 
-func initializeLoggerPtr(logger zap.Logger) *zap.Logger {
-	return &logger
+func InitializeLoggerPtr(logger *zap.Logger) *RLogger {
+	return &RLogger{Logger: logger}
 }
 
 func (logger RLogger) Error(err error) error {
 	if err != nil {
-		LocalLogger.Error(tag + err.Error())
+		logger.Logger.Error(tag + err.Error())
 
 		return fmt.Errorf(tag + err.Error())
 	}
@@ -62,7 +54,7 @@ func (logger RLogger) Error(err error) error {
 func (logger RLogger) ErrorWithCallback(err error, f func()) error {
 	if err != nil {
 		f()
-		LocalLogger.Error(tag + err.Error())
+		logger.Logger.Error(tag + err.Error())
 
 		return fmt.Errorf(tag + err.Error())
 	}
@@ -71,19 +63,19 @@ func (logger RLogger) ErrorWithCallback(err error, f func()) error {
 }
 
 func (logger RLogger) Info(msg string) string {
-	LocalLogger.Info(tag + msg)
+	logger.Logger.Info(tag + msg)
 
 	return fmt.Sprintf(tag + msg)
 }
 
-func (logger RLogger) InfoWithCallback(msg string, f func()) string {
+func (logger *RLogger) InfoWithCallback(msg string, f func()) string {
 	f()
-	LocalLogger.Info(tag + msg)
+	logger.Logger.Info(tag + msg)
 
 	return fmt.Sprintf(tag + msg)
 }
 
-func (l *FxLogger) LogEvent(event fxevent.Event) {
+func (l RLogger) LogEvent(event fxevent.Event) {
 	switch e := event.(type) {
 	case *fxevent.OnStartExecuting:
 		l.Logger.Debug("OnStart hook executing: ",
