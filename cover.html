@@ -3,7 +3,7 @@
 <html>
 	<head>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-		<title>helper: Go Coverage Report</title>
+		<title>config: Go Coverage Report</title>
 		<style>
 			body {
 				background: black;
@@ -55,11 +55,13 @@
 			<div id="nav">
 				<select id="files">
 				
-				<option value="file0">github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/d_logger.go (100.0%)</option>
+				<option value="file0">github.com/kaankoken/binance-quick-go-api-gateway/config/config.go (100.0%)</option>
 				
-				<option value="file1">github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/handler.go (0.0%)</option>
+				<option value="file1">github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/d_logger.go (100.0%)</option>
 				
-				<option value="file2">github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/r_logger.go (53.3%)</option>
+				<option value="file2">github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/handler.go (0.0%)</option>
+				
+				<option value="file3">github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/r_logger.go (53.3%)</option>
 				
 				</select>
 			</div>
@@ -82,7 +84,48 @@
 		</div>
 		<div id="content">
 		
-		<pre class="file" id="file0" style="display: none">package helper
+		<pre class="file" id="file0" style="display: none">package config
+
+import (
+        "github.com/spf13/viper"
+        "go.uber.org/fx"
+)
+
+var Module = fx.Options(fx.Provide(LoadConfig))
+
+type Config struct {
+        Port           string `mapstructure:"PORT"`
+        Flavor         string `mapstructure:"FLAVOR"`
+        Mode           string `mapstructure:"GIN_MODE"`
+        AuthSvcUrl     string `mapstructure:"AUTH_SVC_URL"`
+        ObserverSvcUrl string `mapstructure:"OBSERVER_SVC_URL"`
+        TelegramSvcUrl string `mapstructure:"TELEGRAM_SVC_URL"`
+}
+
+func LoadConfig() (c *Config, err error) <span class="cov10" title="5">{
+        viper.SetConfigType("env")
+
+        viper.AddConfigPath("$PWD")
+        viper.AddConfigPath("$PWD/config/")
+        viper.AddConfigPath("$PWD/config/envs/")
+        viper.AddConfigPath(".")
+
+        viper.AutomaticEnv()
+
+        err = viper.ReadInConfig()
+        if err != nil </span><span class="cov4" title="2">{
+                return nil, err
+        }</span>
+
+        // Since the Config struct &amp; read version struct is same
+        // wont throw error
+        <span class="cov7" title="3">_ = viper.Unmarshal(&amp;c)
+
+        return c, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file1" style="display: none">package helper
 
 import (
         "fmt"
@@ -141,7 +184,7 @@ func (logger DLogger) InfoWithCallback(msg string, f func()) string <span class=
 }</span>
 </pre>
 		
-		<pre class="file" id="file1" style="display: none">package helper
+		<pre class="file" id="file2" style="display: none">package helper
 
 import (
         "fmt"
@@ -223,7 +266,7 @@ func (l *LogHandler) InfoWithCallback(msg string, f func()) string <span class="
 }
 </pre>
 		
-		<pre class="file" id="file2" style="display: none">package helper
+		<pre class="file" id="file3" style="display: none">package helper
 
 import (
         "fmt"
