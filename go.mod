@@ -6,6 +6,7 @@ require (
 	github.com/gin-gonic/gin v1.8.1
 	github.com/spf13/viper v1.10.1
 	go.uber.org/fx v1.18.1
+	go.uber.org/zap v1.16.0
 	google.golang.org/grpc v1.43.0
 	google.golang.org/protobuf v1.28.0
 )
@@ -28,7 +29,6 @@ require (
 	go.uber.org/atomic v1.6.0 // indirect
 	go.uber.org/dig v1.15.0 // indirect
 	go.uber.org/multierr v1.5.0 // indirect
-	go.uber.org/zap v1.16.0 // indirect
 	golang.org/x/crypto v0.0.0-20211108221036-ceb1ce70b4fa // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
