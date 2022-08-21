@@ -17,7 +17,7 @@ func TestDebugLogger(t *testing.T) {
 
 	t.Parallel()
 
-	t.Run("logger-error=no-error", func(t *testing.T) {
+	t.Run("d-logger-error=no-error", func(t *testing.T) {
 		t.Parallel()
 
 		err := l.Error(nil)
@@ -25,7 +25,7 @@ func TestDebugLogger(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("logger-error=only-error", func(t *testing.T) {
+	t.Run("d-logger-error=only-error", func(t *testing.T) {
 		t.Parallel()
 
 		msg := "Testing error message"
@@ -35,7 +35,7 @@ func TestDebugLogger(t *testing.T) {
 		assert.ErrorContains(t, err, msg)
 	})
 
-	t.Run("logger-error=no-error&empty-callback", func(t *testing.T) {
+	t.Run("d-logger-error=no-error&empty-callback", func(t *testing.T) {
 		t.Parallel()
 
 		f := func() {}
@@ -44,7 +44,7 @@ func TestDebugLogger(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("logger-error=error&empty-callback", func(t *testing.T) {
+	t.Run("d-logger-error=error&empty-callback", func(t *testing.T) {
 		t.Parallel()
 
 		msg := "Testing error message"
@@ -56,7 +56,7 @@ func TestDebugLogger(t *testing.T) {
 		assert.ErrorContains(t, err, msg)
 	})
 
-	t.Run("logger-error=error&callback", func(t *testing.T) {
+	t.Run("d-logger-error=error&callback", func(t *testing.T) {
 		t.Parallel()
 
 		msg := "Testing error message"
@@ -73,7 +73,7 @@ func TestDebugLogger(t *testing.T) {
 		assert.ErrorContains(t, err, msg)
 	})
 
-	t.Run("logger-info=success", func(t *testing.T) {
+	t.Run("d-logger-info=success", func(t *testing.T) {
 		t.Parallel()
 
 		msg := "Testing info message"
@@ -82,7 +82,7 @@ func TestDebugLogger(t *testing.T) {
 		assert.Contains(t, _msg, msg)
 	})
 
-	t.Run("logger-info=success&empty-callback", func(t *testing.T) {
+	t.Run("d-logger-info=success&empty-callback", func(t *testing.T) {
 		t.Parallel()
 
 		msg := "Testing info message"
@@ -93,7 +93,7 @@ func TestDebugLogger(t *testing.T) {
 		assert.Contains(t, _msg, msg)
 	})
 
-	t.Run("logger-info=success&callback", func(t *testing.T) {
+	t.Run("d-logger-info=success&callback", func(t *testing.T) {
 		t.Parallel()
 
 		msg := "Testing info message"
@@ -147,7 +147,7 @@ func TestDebugLoggerWithFx(t *testing.T) {
 		require.NoError(t, app.Err())
 		assert.Contains(t, g, `"fx.DotGraph" [label=<fx.DotGraph>];`)
 
-		t.Run("logger-error=no-error", func(t *testing.T) {
+		t.Run("d-logger-error=no-error", func(t *testing.T) {
 			t.Parallel()
 
 			err := l.Error(nil)
@@ -155,7 +155,7 @@ func TestDebugLoggerWithFx(t *testing.T) {
 			assert.Nil(t, err)
 		})
 
-		t.Run("logger-error=only-error", func(t *testing.T) {
+		t.Run("d-logger-error=only-error", func(t *testing.T) {
 			t.Parallel()
 
 			msg := "Testing error message"
@@ -165,7 +165,7 @@ func TestDebugLoggerWithFx(t *testing.T) {
 			assert.ErrorContains(t, err, msg)
 		})
 
-		t.Run("logger-error=no-error&empty-callback", func(t *testing.T) {
+		t.Run("d-logger-error=no-error&empty-callback", func(t *testing.T) {
 			t.Parallel()
 
 			f := func() {}
@@ -174,7 +174,7 @@ func TestDebugLoggerWithFx(t *testing.T) {
 			assert.Nil(t, err)
 		})
 
-		t.Run("logger-error=error&empty-callback", func(t *testing.T) {
+		t.Run("d-logger-error=error&empty-callback", func(t *testing.T) {
 			t.Parallel()
 
 			msg := "Testing error message"
@@ -186,7 +186,7 @@ func TestDebugLoggerWithFx(t *testing.T) {
 			assert.ErrorContains(t, err, msg)
 		})
 
-		t.Run("logger-error=error&callback", func(t *testing.T) {
+		t.Run("d-logger-error=error&callback", func(t *testing.T) {
 			t.Parallel()
 
 			msg := "Testing error message"
@@ -203,7 +203,7 @@ func TestDebugLoggerWithFx(t *testing.T) {
 			assert.ErrorContains(t, err, msg)
 		})
 
-		t.Run("logger-info=success", func(t *testing.T) {
+		t.Run("d-logger-info=success", func(t *testing.T) {
 			t.Parallel()
 
 			msg := "Testing info message"
@@ -212,7 +212,7 @@ func TestDebugLoggerWithFx(t *testing.T) {
 			assert.Contains(t, _msg, msg)
 		})
 
-		t.Run("logger-info=success&empty-callback", func(t *testing.T) {
+		t.Run("d-logger-info=success&empty-callback", func(t *testing.T) {
 			t.Parallel()
 
 			msg := "Testing info message"
@@ -223,7 +223,7 @@ func TestDebugLoggerWithFx(t *testing.T) {
 			assert.Contains(t, _msg, msg)
 		})
 
-		t.Run("logger-info=success&callback", func(t *testing.T) {
+		t.Run("d-logger-info=success&callback", func(t *testing.T) {
 			t.Parallel()
 
 			msg := "Testing info message"
