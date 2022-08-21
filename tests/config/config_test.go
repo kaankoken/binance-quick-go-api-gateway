@@ -81,7 +81,7 @@ func TestConfig(t *testing.T) {
 }
 
 func TestConfigWithFx(t *testing.T) {
-	t.Run("config-fx", func(t *testing.T) {
+	t.Run("config=injection-test", func(t *testing.T) {
 		var data *config.Config
 		var g fx.DotGraph
 
@@ -94,7 +94,7 @@ func TestConfigWithFx(t *testing.T) {
 				generateFakeSuccessfulConfig(t)
 			}),
 
-			fx.Provide(config.LoadConfig),
+			config.Module,
 			fx.Populate(&g),
 			fx.Populate(&data),
 		).RequireStart()
