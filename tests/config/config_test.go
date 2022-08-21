@@ -119,6 +119,7 @@ func TestConfigWithFx(t *testing.T) {
 		assert.Equal(t, data.TelegramSvcUrl, "localhost:3")
 	})
 }
+
 func generateFakeWronglConfig(tb testing.TB) {
 	os.Remove("config.env")
 

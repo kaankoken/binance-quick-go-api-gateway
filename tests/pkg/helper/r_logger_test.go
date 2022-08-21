@@ -18,14 +18,14 @@ func TestReleaseLogger(t *testing.T) {
 
 	t.Parallel()
 
-	t.Run("logger-error=no-error", func(t *testing.T) {
+	t.Run("r-logger-error=no-error", func(t *testing.T) {
 		t.Parallel()
 		err := l.Error(nil)
 
 		assert.Nil(t, err)
 	})
 
-	t.Run("logger-error=only-error", func(t *testing.T) {
+	t.Run("r-logger-error=only-error", func(t *testing.T) {
 		t.Parallel()
 
 		msg := "Testing error message"
@@ -35,7 +35,7 @@ func TestReleaseLogger(t *testing.T) {
 		assert.ErrorContains(t, err, msg)
 	})
 
-	t.Run("logger-error=no-error&empty-callback", func(t *testing.T) {
+	t.Run("r-logger-error=no-error&empty-callback", func(t *testing.T) {
 		t.Parallel()
 
 		f := func() {}
@@ -44,7 +44,7 @@ func TestReleaseLogger(t *testing.T) {
 		assert.Nil(t, err)
 	})
 
-	t.Run("logger-error=error&empty-callback", func(t *testing.T) {
+	t.Run("r-logger-error=error&empty-callback", func(t *testing.T) {
 		t.Parallel()
 
 		msg := "Testing error message"
@@ -56,7 +56,7 @@ func TestReleaseLogger(t *testing.T) {
 		assert.ErrorContains(t, err, msg)
 	})
 
-	t.Run("logger-error=error&callback", func(t *testing.T) {
+	t.Run("r-logger-error=error&callback", func(t *testing.T) {
 		t.Parallel()
 
 		msg := "Testing error message"
@@ -73,7 +73,7 @@ func TestReleaseLogger(t *testing.T) {
 		assert.ErrorContains(t, err, msg)
 	})
 
-	t.Run("logger-info=success", func(t *testing.T) {
+	t.Run("r-logger-info=success", func(t *testing.T) {
 		t.Parallel()
 
 		msg := "Testing info message"
@@ -82,7 +82,7 @@ func TestReleaseLogger(t *testing.T) {
 		assert.Contains(t, _msg, msg)
 	})
 
-	t.Run("logger-info=success&empty-callback", func(t *testing.T) {
+	t.Run("r-logger-info=success&empty-callback", func(t *testing.T) {
 		t.Parallel()
 
 		msg := "Testing info message"
@@ -93,7 +93,7 @@ func TestReleaseLogger(t *testing.T) {
 		assert.Contains(t, _msg, msg)
 	})
 
-	t.Run("logger-info=success&callback", func(t *testing.T) {
+	t.Run("r-logger-info=success&callback", func(t *testing.T) {
 		t.Parallel()
 
 		msg := "Testing info message"
@@ -147,14 +147,14 @@ func TestReleaseLoggerWithFx(t *testing.T) {
 		require.NoError(t, app.Err())
 		assert.Contains(t, g, `"fx.DotGraph" [label=<fx.DotGraph>];`)
 
-		t.Run("logger-error=no-error", func(t *testing.T) {
+		t.Run("r-logger-error=no-error", func(t *testing.T) {
 			t.Parallel()
 			err := l.Error(nil)
 
 			assert.Nil(t, err)
 		})
 
-		t.Run("logger-error=only-error", func(t *testing.T) {
+		t.Run("r-logger-error=only-error", func(t *testing.T) {
 			t.Parallel()
 
 			msg := "Testing error message"
@@ -164,7 +164,7 @@ func TestReleaseLoggerWithFx(t *testing.T) {
 			assert.ErrorContains(t, err, msg)
 		})
 
-		t.Run("logger-error=no-error&empty-callback", func(t *testing.T) {
+		t.Run("r-logger-error=no-error&empty-callback", func(t *testing.T) {
 			t.Parallel()
 
 			f := func() {}
@@ -173,7 +173,7 @@ func TestReleaseLoggerWithFx(t *testing.T) {
 			assert.Nil(t, err)
 		})
 
-		t.Run("logger-error=error&empty-callback", func(t *testing.T) {
+		t.Run("r-logger-error=error&empty-callback", func(t *testing.T) {
 			t.Parallel()
 
 			msg := "Testing error message"
@@ -185,7 +185,7 @@ func TestReleaseLoggerWithFx(t *testing.T) {
 			assert.ErrorContains(t, err, msg)
 		})
 
-		t.Run("logger-error=error&callback", func(t *testing.T) {
+		t.Run("r-logger-error=error&callback", func(t *testing.T) {
 			t.Parallel()
 
 			msg := "Testing error message"
@@ -202,7 +202,7 @@ func TestReleaseLoggerWithFx(t *testing.T) {
 			assert.ErrorContains(t, err, msg)
 		})
 
-		t.Run("logger-info=success", func(t *testing.T) {
+		t.Run("r-logger-info=success", func(t *testing.T) {
 			t.Parallel()
 
 			msg := "Testing info message"
@@ -211,7 +211,7 @@ func TestReleaseLoggerWithFx(t *testing.T) {
 			assert.Contains(t, _msg, msg)
 		})
 
-		t.Run("logger-info=success&empty-callback", func(t *testing.T) {
+		t.Run("r-logger-info=success&empty-callback", func(t *testing.T) {
 			t.Parallel()
 
 			msg := "Testing info message"
@@ -222,7 +222,7 @@ func TestReleaseLoggerWithFx(t *testing.T) {
 			assert.Contains(t, _msg, msg)
 		})
 
-		t.Run("logger-info=success&callback", func(t *testing.T) {
+		t.Run("r-logger-info=success&callback", func(t *testing.T) {
 			t.Parallel()
 
 			msg := "Testing info message"
