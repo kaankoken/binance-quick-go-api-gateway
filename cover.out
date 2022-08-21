@@ -1,4 +1,7 @@
 mode: atomic
+github.com/kaankoken/binance-quick-go-api-gateway/config/config.go:19.42,30.16 8 5
+github.com/kaankoken/binance-quick-go-api-gateway/config/config.go:36.2,38.15 2 3
+github.com/kaankoken/binance-quick-go-api-gateway/config/config.go:30.16,32.3 1 2
 github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/d_logger.go:18.24,20.2 1 1
 github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/d_logger.go:25.46,26.16 1 2
 github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/d_logger.go:32.2,32.12 1 1
