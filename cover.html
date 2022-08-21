@@ -59,7 +59,7 @@
 				
 				<option value="file1">github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/d_logger.go (100.0%)</option>
 				
-				<option value="file2">github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/handler.go (0.0%)</option>
+				<option value="file2">github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/handler.go (100.0%)</option>
 				
 				<option value="file3">github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/r_logger.go (75.0%)</option>
 				
@@ -190,8 +190,6 @@ func (logger DLogger) InfoWithCallback(msg string, f func()) string <span class=
 		<pre class="file" id="file2" style="display: none">package helper
 
 import (
-        "fmt"
-
         "github.com/kaankoken/binance-quick-go-api-gateway/config"
         "go.uber.org/fx"
 )
@@ -203,10 +201,10 @@ const (
 var LoggerModule = fx.Options(
         DebugModule,
         ReleaseModule,
-        fx.Provide(initialize),
+        fx.Provide(Initialize),
 )
 
-type logHandler interface {
+type ILogHandler interface {
         Error(err error) error
         ErrorWithCallback(err error, f func()) error
         Info(msg string) string
@@ -214,58 +212,49 @@ type logHandler interface {
 }
 
 type LogHandler struct {
-        debug, release *logHandler
+        debug, release *ILogHandler
         config         *config.Config
 }
 
-func initialize(c *config.Config) *LogHandler <span class="cov0" title="0">{
-        var d logHandler
-        var r logHandler
+func Initialize(c *config.Config, D *DLogger, R *RLogger) *LogHandler <span class="cov4" title="2">{
+        var d, r ILogHandler
 
-        d = &amp;DLogger{}
-        r = &amp;RLogger{}
+        d = D
+        r = R
 
         return &amp;LogHandler{debug: &amp;d, release: &amp;r, config: c}
 }</span>
 
-func (l *LogHandler) Error(err error) error <span class="cov0" title="0">{
-        if l.config.Flavor == dev </span><span class="cov0" title="0">{
-                (*l.debug).Error(err)
+func (l LogHandler) Error(err error) error <span class="cov7" title="4">{
+        if l.config.Flavor == dev </span><span class="cov4" title="2">{
+                return (*l.debug).Error(err)
         }</span>
 
-        <span class="cov0" title="0">(*l.release).Error(err)
-
-        return nil</span>
+        <span class="cov4" title="2">return (*l.release).Error(err)</span>
 }
 
-func (l *LogHandler) ErrorWithCallback(err error, f func()) error <span class="cov0" title="0">{
-        if l.config.Flavor == dev </span><span class="cov0" title="0">{
-                (*l.debug).ErrorWithCallback(err, f)
+func (l LogHandler) ErrorWithCallback(err error, f func()) error <span class="cov10" title="6">{
+        if l.config.Flavor == dev </span><span class="cov6" title="3">{
+                return (*l.debug).ErrorWithCallback(err, f)
         }</span>
 
-        <span class="cov0" title="0">(*l.release).ErrorWithCallback(err, f)
-
-        return nil</span>
+        <span class="cov6" title="3">return (*l.release).ErrorWithCallback(err, f)</span>
 }
 
-func (l *LogHandler) Info(msg string) string <span class="cov0" title="0">{
-        if l.config.Flavor == dev </span><span class="cov0" title="0">{
-                (*l.debug).Info(msg)
+func (l LogHandler) Info(msg string) string <span class="cov4" title="2">{
+        if l.config.Flavor == dev </span><span class="cov1" title="1">{
+                return (*l.debug).Info(msg)
         }</span>
 
-        <span class="cov0" title="0">(*l.release).Info(msg)
-
-        return fmt.Sprintf(tag + msg)</span>
+        <span class="cov1" title="1">return (*l.release).Info(msg)</span>
 }
 
-func (l *LogHandler) InfoWithCallback(msg string, f func()) string <span class="cov0" title="0">{
-        if l.config.Flavor == dev </span><span class="cov0" title="0">{
-                (*l.debug).InfoWithCallback(msg, f)
+func (l LogHandler) InfoWithCallback(msg string, f func()) string <span class="cov7" title="4">{
+        if l.config.Flavor == dev </span><span class="cov4" title="2">{
+                return (*l.debug).InfoWithCallback(msg, f)
         }</span>
 
-        <span class="cov0" title="0">(*l.release).InfoWithCallback(msg, f)
-
-        return fmt.Sprintf(tag + msg)</span>
+        <span class="cov4" title="2">return (*l.release).InfoWithCallback(msg, f)</span>
 }
 </pre>
 		
