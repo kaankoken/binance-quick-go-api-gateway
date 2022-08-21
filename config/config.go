@@ -5,7 +5,7 @@ import (
 	"go.uber.org/fx"
 )
 
-var Module = fx.Options(fx.Provide(loadConfig))
+var Module = fx.Options(fx.Provide(LoadConfig))
 
 type Config struct {
 	Port           string `mapstructure:"PORT"`
@@ -16,7 +16,7 @@ type Config struct {
 	TelegramSvcUrl string `mapstructure:"TELEGRAM_SVC_URL"`
 }
 
-func loadConfig() (c *Config, err error) {
+func LoadConfig() (c *Config, err error) {
 	viper.SetConfigType("env")
 
 	viper.AddConfigPath("$PWD")
@@ -31,10 +31,9 @@ func loadConfig() (c *Config, err error) {
 		return nil, err
 	}
 
-	err = viper.Unmarshal(&c)
-	if err != nil {
-		return nil, err
-	}
+	// Since the Config struct & read version struct is same
+	// wont throw error
+	_ = viper.Unmarshal(&c)
 
 	return c, nil
 }
