@@ -61,7 +61,7 @@
 				
 				<option value="file2">github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/handler.go (0.0%)</option>
 				
-				<option value="file3">github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/r_logger.go (53.3%)</option>
+				<option value="file3">github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/r_logger.go (75.0%)</option>
 				
 				</select>
 			</div>
@@ -134,49 +134,52 @@ import (
         "go.uber.org/fx"
 )
 
+type DLogger struct {
+        Logger *log.Logger
+}
+
 var DebugModule = fx.Options(
-        fx.Invoke(SetLoggerFormat),
+        fx.Provide(SetLoggerFormat),
 )
 
 const (
         tag string = "Binance-Quick-Go-Api-Gateway -&gt; "
 )
 
-func SetLoggerFormat() <span class="cov1" title="1">{
+func SetLoggerFormat() *DLogger <span class="cov4" title="2">{
         log.SetFormatter(&amp;log.TextFormatter{})
+
+        return &amp;DLogger{Logger: &amp;log.Logger{}}
 }</span>
 
-type DLogger struct {
-}
-
-func (logger DLogger) Error(err error) error <span class="cov6" title="2">{
-        if err != nil </span><span class="cov1" title="1">{
+func (logger DLogger) Error(err error) error <span class="cov7" title="4">{
+        if err != nil </span><span class="cov4" title="2">{
                 log.Errorf(tag, err.Error())
 
                 return fmt.Errorf(tag + err.Error())
         }</span>
 
-        <span class="cov1" title="1">return nil</span>
+        <span class="cov4" title="2">return nil</span>
 }
 
-func (logger DLogger) ErrorWithCallback(err error, f func()) error <span class="cov10" title="3">{
-        if err != nil </span><span class="cov6" title="2">{
+func (logger DLogger) ErrorWithCallback(err error, f func()) error <span class="cov10" title="6">{
+        if err != nil </span><span class="cov7" title="4">{
                 f()
                 log.Errorf(tag, err.Error())
 
                 return fmt.Errorf(tag + err.Error())
         }</span>
 
-        <span class="cov1" title="1">return nil</span>
+        <span class="cov4" title="2">return nil</span>
 }
 
-func (logger DLogger) Info(msg string) string <span class="cov1" title="1">{
+func (logger DLogger) Info(msg string) string <span class="cov4" title="2">{
         log.Infoln(tag, msg)
 
         return fmt.Sprintf(tag + msg)
 }</span>
 
-func (logger DLogger) InfoWithCallback(msg string, f func()) string <span class="cov6" title="2">{
+func (logger DLogger) InfoWithCallback(msg string, f func()) string <span class="cov7" title="4">{
         f()
         log.Infoln(tag, msg)
 
@@ -219,8 +222,8 @@ func initialize(c *config.Config) *LogHandler <span class="cov0" title="0">{
         var d logHandler
         var r logHandler
 
-        d = DLogger{}
-        r = RLogger{}
+        d = &amp;DLogger{}
+        r = &amp;RLogger{}
 
         return &amp;LogHandler{debug: &amp;d, release: &amp;r, config: c}
 }</span>
@@ -278,24 +281,18 @@ import (
         "go.uber.org/zap/zapcore"
 )
 
-type FxLogger struct {
+type RLogger struct {
         Logger *zap.Logger
 }
 
 var ReleaseModule = fx.Options(
-        fx.Provide(InitializeLogger, initializeLoggerPtr),
-        fx.WithLogger(func(logger *zap.Logger) fxevent.Logger <span class="cov0" title="0">{
-                return &amp;FxLogger{Logger: logger}
+        fx.Provide(InitializeLogger, InitializeLoggerPtr),
+        fx.WithLogger(func(logger *zap.Logger) fxevent.Logger <span class="cov3" title="2">{
+                return &amp;RLogger{Logger: logger}
         }</span>),
 )
 
-var (
-        LocalLogger *zap.Logger
-)
-
-type RLogger struct{}
-
-func InitializeLogger() zap.Logger <span class="cov1" title="1">{
+func InitializeLogger() *zap.Logger <span class="cov4" title="3">{
         config := zap.NewProductionEncoderConfig()
         config.EncodeTime = zapcore.ISO8601TimeEncoder
         fileEncoder := zapcore.NewJSONEncoder(config)
@@ -308,50 +305,48 @@ func InitializeLogger() zap.Logger <span class="cov1" title="1">{
                 zapcore.NewCore(consoleEncoder, zapcore.AddSync(os.Stdout), defaultLogLevel),
         )
 
-        LocalLogger = zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
-
-        return *zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
+        return zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
 }</span>
 
-func initializeLoggerPtr(logger zap.Logger) *zap.Logger <span class="cov0" title="0">{
-        return &amp;logger
+func InitializeLoggerPtr(logger *zap.Logger) *RLogger <span class="cov3" title="2">{
+        return &amp;RLogger{Logger: logger}
 }</span>
 
-func (logger RLogger) Error(err error) error <span class="cov6" title="2">{
-        if err != nil </span><span class="cov1" title="1">{
-                LocalLogger.Error(tag + err.Error())
+func (logger RLogger) Error(err error) error <span class="cov5" title="4">{
+        if err != nil </span><span class="cov3" title="2">{
+                logger.Logger.Error(tag + err.Error())
 
                 return fmt.Errorf(tag + err.Error())
         }</span>
 
-        <span class="cov1" title="1">return nil</span>
+        <span class="cov3" title="2">return nil</span>
 }
 
-func (logger RLogger) ErrorWithCallback(err error, f func()) error <span class="cov10" title="3">{
-        if err != nil </span><span class="cov6" title="2">{
+func (logger RLogger) ErrorWithCallback(err error, f func()) error <span class="cov6" title="6">{
+        if err != nil </span><span class="cov5" title="4">{
                 f()
-                LocalLogger.Error(tag + err.Error())
+                logger.Logger.Error(tag + err.Error())
 
                 return fmt.Errorf(tag + err.Error())
         }</span>
 
-        <span class="cov1" title="1">return nil</span>
+        <span class="cov3" title="2">return nil</span>
 }
 
-func (logger RLogger) Info(msg string) string <span class="cov1" title="1">{
-        LocalLogger.Info(tag + msg)
+func (logger RLogger) Info(msg string) string <span class="cov3" title="2">{
+        logger.Logger.Info(tag + msg)
 
         return fmt.Sprintf(tag + msg)
 }</span>
 
-func (logger RLogger) InfoWithCallback(msg string, f func()) string <span class="cov6" title="2">{
+func (logger *RLogger) InfoWithCallback(msg string, f func()) string <span class="cov5" title="4">{
         f()
-        LocalLogger.Info(tag + msg)
+        logger.Logger.Info(tag + msg)
 
         return fmt.Sprintf(tag + msg)
 }</span>
 
-func (l *FxLogger) LogEvent(event fxevent.Event) <span class="cov0" title="0">{
+func (l RLogger) LogEvent(event fxevent.Event) <span class="cov10" title="22">{
         switch e := event.(type) </span>{
         case *fxevent.OnStartExecuting:<span class="cov0" title="0">
                 l.Logger.Debug("OnStart hook executing: ",
@@ -393,8 +388,8 @@ func (l *FxLogger) LogEvent(event fxevent.Event) <span class="cov0" title="0">{
                 }</span>
         case *fxevent.Supplied:<span class="cov0" title="0">
                 l.Logger.Debug("supplied: ", zap.String("type", e.TypeName), zap.Error(e.Err))</span>
-        case *fxevent.Provided:<span class="cov0" title="0">
-                for _, rtype := range e.OutputTypeNames </span><span class="cov0" title="0">{
+        case *fxevent.Provided:<span class="cov7" title="10">
+                for _, rtype := range e.OutputTypeNames </span><span class="cov7" title="10">{
                         l.Logger.Debug("provided: " + e.ConstructorName + " =&gt; " + rtype)
                 }</span>
         case *fxevent.Decorated:<span class="cov0" title="0">
@@ -404,14 +399,14 @@ func (l *FxLogger) LogEvent(event fxevent.Event) <span class="cov0" title="0">{
                                 zap.String("type", rtype),
                         )
                 }</span>
-        case *fxevent.Invoking:<span class="cov0" title="0">
+        case *fxevent.Invoking:<span class="cov4" title="3">
                 l.Logger.Debug("invoking: " + e.FunctionName)</span>
-        case *fxevent.Started:<span class="cov0" title="0">
-                if e.Err == nil </span><span class="cov0" title="0">{
+        case *fxevent.Started:<span class="cov3" title="2">
+                if e.Err == nil </span><span class="cov3" title="2">{
                         l.Logger.Debug("started")
                 }</span>
-        case *fxevent.LoggerInitialized:<span class="cov0" title="0">
-                if e.Err == nil </span><span class="cov0" title="0">{
+        case *fxevent.LoggerInitialized:<span class="cov3" title="2">
+                if e.Err == nil </span><span class="cov3" title="2">{
                         l.Logger.Debug("initialized: custom fxevent.Logger -&gt; " + e.ConstructorName)
                 }</span>
         }
