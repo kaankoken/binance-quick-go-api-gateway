@@ -7,19 +7,22 @@ import (
 	"go.uber.org/fx"
 )
 
+type DLogger struct {
+	Logger *log.Logger
+}
+
 var DebugModule = fx.Options(
-	fx.Invoke(SetLoggerFormat),
+	fx.Provide(SetLoggerFormat),
 )
 
 const (
 	tag string = "Binance-Quick-Go-Api-Gateway -> "
 )
 
-func SetLoggerFormat() {
+func SetLoggerFormat() *DLogger {
 	log.SetFormatter(&log.TextFormatter{})
-}
 
-type DLogger struct {
+	return &DLogger{Logger: &log.Logger{}}
 }
 
 func (logger DLogger) Error(err error) error {
