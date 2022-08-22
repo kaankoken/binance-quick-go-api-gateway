@@ -50,5 +50,6 @@ done
 
 #cat cover.out | grep -v "pb.go" > cover.out
 rm -rf cover.tmp.out
-rm -rf **/text.log
 go tool cover -html=cover.out -o cover.html
+find . -type f -name 'config.env' -delete
+find . -type f -name 'text.log' -delete
