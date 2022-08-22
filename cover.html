@@ -57,11 +57,13 @@
 				
 				<option value="file0">github.com/kaankoken/binance-quick-go-api-gateway/config/config.go (100.0%)</option>
 				
-				<option value="file1">github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/d_logger.go (100.0%)</option>
+				<option value="file1">github.com/kaankoken/binance-quick-go-api-gateway/pkg/handler.go (100.0%)</option>
 				
-				<option value="file2">github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/handler.go (100.0%)</option>
+				<option value="file2">github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/d_logger.go (100.0%)</option>
 				
-				<option value="file3">github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/r_logger.go (75.0%)</option>
+				<option value="file3">github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/handler.go (100.0%)</option>
+				
+				<option value="file4">github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/r_logger.go (75.0%)</option>
 				
 				</select>
 			</div>
@@ -125,7 +127,34 @@ func LoadConfig() (c *Config, err error) <span class="cov10" title="5">{
 }
 </pre>
 		
-		<pre class="file" id="file1" style="display: none">package helper
+		<pre class="file" id="file1" style="display: none">package pkg
+
+import (
+        "fmt"
+
+        "github.com/gin-gonic/gin"
+        "github.com/kaankoken/binance-quick-go-api-gateway/config"
+        "go.uber.org/fx"
+)
+
+var EngineModule = fx.Options(fx.Provide(NewHandler))
+
+type Handler struct {
+        Gin *gin.Engine
+}
+
+func NewHandler(config *config.Config) (h *Handler, err error) <span class="cov10" title="2">{
+        if gin.DebugMode != config.Mode &amp;&amp; gin.TestMode != config.Mode &amp;&amp; gin.ReleaseMode != config.Mode </span><span class="cov1" title="1">{
+                return nil, fmt.Errorf("incorrect mode type")
+        }</span>
+
+        <span class="cov1" title="1">gin.SetMode(config.Mode)
+
+        return &amp;Handler{Gin: gin.Default()}, nil</span>
+}
+</pre>
+		
+		<pre class="file" id="file2" style="display: none">package helper
 
 import (
         "fmt"
@@ -187,7 +216,7 @@ func (logger DLogger) InfoWithCallback(msg string, f func()) string <span class=
 }</span>
 </pre>
 		
-		<pre class="file" id="file2" style="display: none">package helper
+		<pre class="file" id="file3" style="display: none">package helper
 
 import (
         "github.com/kaankoken/binance-quick-go-api-gateway/config"
@@ -258,7 +287,7 @@ func (l LogHandler) InfoWithCallback(msg string, f func()) string <span class="c
 }
 </pre>
 		
-		<pre class="file" id="file3" style="display: none">package helper
+		<pre class="file" id="file4" style="display: none">package helper
 
 import (
         "fmt"
