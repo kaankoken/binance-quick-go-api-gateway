@@ -3,22 +3,11 @@ package telegram
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/kaankoken/binance-quick-go-api-gateway/pkg"
-	"github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper"
-	"github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram/pb"
 	"github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram/routes"
 	"go.uber.org/fx"
 )
 
-var RouteModule = fx.Options(fx.Provide(initialize), fx.Invoke(registerRoutes))
-
-func initialize(client pb.TelegramServiceClient, logger *helper.LogHandler) *ServiceClient {
-	svc := &ServiceClient{
-		Client: client,
-		Logger: logger,
-	}
-
-	return svc
-}
+var RouteModule = fx.Options(fx.Invoke(registerRoutes))
 
 func registerRoutes(client *ServiceClient, handler *pkg.Handler) {
 	routes := handler.Gin.Group("/telegram")

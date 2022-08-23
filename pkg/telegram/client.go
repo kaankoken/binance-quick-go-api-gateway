@@ -16,6 +16,15 @@ type ServiceClient struct {
 	Logger *helper.LogHandler
 }
 
+func Initialize(client pb.TelegramServiceClient, logger *helper.LogHandler) *ServiceClient {
+	svc := &ServiceClient{
+		Client: client,
+		Logger: logger,
+	}
+
+	return svc
+}
+
 func InitServiceClient(c *config.Config, logger *helper.LogHandler) pb.TelegramServiceClient {
 	cc, err := grpc.Dial(c.TelegramSvcUrl, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	logger.Error(err)
