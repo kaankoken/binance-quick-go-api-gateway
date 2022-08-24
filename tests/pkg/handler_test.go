@@ -53,6 +53,7 @@ func TestGinHandlerWithFx(t *testing.T) {
 			fx.Logger(fxtest.NewTestPrinter(t)),
 			fx.WithLogger(func() fxevent.Logger { return fxtest.NewTestLogger(t) }),
 			pkg.EngineModule,
+			config.Module,
 			fx.Populate(&g),
 		).RequireStart()
 
@@ -66,20 +67,22 @@ func TestGinHandlerWithFx(t *testing.T) {
 		generateFakeSuccessfulConfig(t)
 
 		var g fx.DotGraph
+		var handler *pkg.Handler
 
 		app := fxtest.New(
 			t,
 			fx.Logger(fxtest.NewTestPrinter(t)),
 			fx.WithLogger(func() fxevent.Logger { return fxtest.NewTestLogger(t) }),
 			pkg.EngineModule,
+			config.Module,
 			fx.Populate(&g),
+			fx.Populate(&handler),
 		).RequireStart()
 
 		defer app.RequireStop()
 
 		require.NoError(t, app.Err())
 		assert.Contains(t, g, `"fx.DotGraph" [label=<fx.DotGraph>];`)
-
 	})
 }
 
