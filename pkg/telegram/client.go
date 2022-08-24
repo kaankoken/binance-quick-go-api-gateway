@@ -16,13 +16,11 @@ type ServiceClient struct {
 	Logger *helper.LogHandler
 }
 
-func Initialize(client pb.TelegramServiceClient, logger *helper.LogHandler) *ServiceClient {
-	svc := &ServiceClient{
+func Initialize(client pb.TelegramServiceClient, logger *helper.LogHandler) ServiceClient {
+	return ServiceClient{
 		Client: client,
 		Logger: logger,
 	}
-
-	return svc
 }
 
 func InitServiceClient(c *config.Config, logger *helper.LogHandler) pb.TelegramServiceClient {
