@@ -65,6 +65,8 @@
 				
 				<option value="file4">github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/r_logger.go (75.0%)</option>
 				
+				<option value="file5">github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram/client.go (100.0%)</option>
+				
 				</select>
 			</div>
 			<div id="legend">
@@ -143,12 +145,12 @@ type Handler struct {
         Gin *gin.Engine
 }
 
-func NewHandler(config *config.Config) (h *Handler, err error) <span class="cov10" title="2">{
+func NewHandler(config *config.Config) (h *Handler, err error) <span class="cov10" title="3">{
         if gin.DebugMode != config.Mode &amp;&amp; gin.TestMode != config.Mode &amp;&amp; gin.ReleaseMode != config.Mode </span><span class="cov1" title="1">{
                 return nil, fmt.Errorf("incorrect mode type")
         }</span>
 
-        <span class="cov1" title="1">gin.SetMode(config.Mode)
+        <span class="cov6" title="2">gin.SetMode(config.Mode)
 
         return &amp;Handler{Gin: gin.Default()}, nil</span>
 }
@@ -429,6 +431,39 @@ func (l RLogger) LogEvent(event fxevent.Event) <span class="cov10" title="22">{
                 }</span>
         }
 }
+</pre>
+		
+		<pre class="file" id="file5" style="display: none">package telegram
+
+import (
+        "github.com/kaankoken/binance-quick-go-api-gateway/config"
+        "github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper"
+        "github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram/pb"
+        "go.uber.org/fx"
+        "google.golang.org/grpc"
+        "google.golang.org/grpc/credentials/insecure"
+)
+
+var ClientModule = fx.Options(fx.Provide(InitServiceClient))
+
+type ServiceClient struct {
+        Client pb.TelegramServiceClient
+        Logger *helper.LogHandler
+}
+
+func Initialize(client pb.TelegramServiceClient, logger *helper.LogHandler) ServiceClient <span class="cov5" title="2">{
+        return ServiceClient{
+                Client: client,
+                Logger: logger,
+        }
+}</span>
+
+func InitServiceClient(c *config.Config, logger *helper.LogHandler) pb.TelegramServiceClient <span class="cov10" title="4">{
+        cc, err := grpc.Dial(c.TelegramSvcUrl, grpc.WithTransportCredentials(insecure.NewCredentials()))
+        logger.Error(err)
+
+        return pb.NewTelegramServiceClient(cc)
+}</span>
 </pre>
 		
 		</div>
