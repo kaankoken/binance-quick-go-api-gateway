@@ -67,6 +67,8 @@
 				
 				<option value="file5">github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram/client.go (100.0%)</option>
 				
+				<option value="file6">github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram/routes.go (54.5%)</option>
+				
 				</select>
 			</div>
 			<div id="legend">
@@ -444,7 +446,7 @@ import (
         "google.golang.org/grpc/credentials/insecure"
 )
 
-var ClientModule = fx.Options(fx.Provide(InitServiceClient))
+var ClientModule = fx.Options(fx.Provide(InitServiceClient), fx.Provide(Initialize))
 
 type ServiceClient struct {
         Client pb.TelegramServiceClient
@@ -463,6 +465,47 @@ func InitServiceClient(c *config.Config, logger *helper.LogHandler) pb.TelegramS
         logger.Error(err)
 
         return pb.NewTelegramServiceClient(cc)
+}</span>
+</pre>
+		
+		<pre class="file" id="file6" style="display: none">package telegram
+
+import (
+        "github.com/gin-gonic/gin"
+        "github.com/kaankoken/binance-quick-go-api-gateway/pkg"
+        "github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram/routes"
+        "go.uber.org/fx"
+)
+
+var RouteModule = fx.Options(fx.Invoke(RegisterRoutes))
+
+func RegisterRoutes(client ServiceClient, handler *pkg.Handler) <span class="cov8" title="1">{
+        routes := handler.Gin.Group("/telegram")
+        routes.POST("/", client.Start)
+        routes.POST("/healthz", client.Status)
+        routes.POST("/message", client.SendMessage)
+        routes.POST("/stop", client.Stop)
+
+        // TODO: will be deleted preserved for test purposes only
+        routes.GET("/test", func(ctx *gin.Context) </span><span class="cov0" title="0">{
+                ctx.JSON(200, gin.H{"message": "Health OK"})
+        }</span>)
+}
+
+func (svc ServiceClient) Start(ctx *gin.Context) <span class="cov0" title="0">{
+        routes.Start(ctx, svc.Logger, svc.Client)
+}</span>
+
+func (svc ServiceClient) Stop(ctx *gin.Context) <span class="cov0" title="0">{
+        routes.Stop(ctx, svc.Logger, svc.Client)
+}</span>
+
+func (svc ServiceClient) SendMessage(ctx *gin.Context) <span class="cov0" title="0">{
+        routes.SendMessage(ctx, svc.Logger, svc.Client)
+}</span>
+
+func (svc ServiceClient) Status(ctx *gin.Context) <span class="cov0" title="0">{
+        routes.Status(ctx, svc.Logger, svc.Client)
 }</span>
 </pre>
 		
