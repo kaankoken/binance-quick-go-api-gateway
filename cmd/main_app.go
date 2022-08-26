@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"context"
@@ -11,20 +11,20 @@ import (
 	"github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram"
 )
 
-func main() {
+func MainApp() *fx.App {
 	app := fx.New(
 		config.Module,
 		telegram.ClientModule,
 		pkg.EngineModule,
 		telegram.RouteModule,
 		helper.LoggerModule,
-		fx.Invoke(registerHooks),
+		fx.Invoke(RegisterHooks),
 	)
 
-	app.Run()
+	return app
 }
 
-func registerHooks(lifecycle fx.Lifecycle, h *pkg.Handler, config *config.Config, logger *helper.LogHandler) {
+func RegisterHooks(lifecycle fx.Lifecycle, h *pkg.Handler, config *config.Config, logger *helper.LogHandler) {
 	lifecycle.Append(
 		fx.Hook{
 			OnStart: func(context.Context) error {
