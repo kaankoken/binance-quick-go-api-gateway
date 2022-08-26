@@ -59,3 +59,9 @@ github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/r_logger.go:134.19,
 github.com/kaankoken/binance-quick-go-api-gateway/pkg/helper/r_logger.go:138.19,140.4 1 2
 github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram/client.go:19.91,24.2 1 2
 github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram/client.go:26.94,31.2 3 4
+github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram/routes.go:12.65,20.45 6 1
+github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram/routes.go:20.45,22.3 1 0
+github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram/routes.go:25.50,27.2 1 0
+github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram/routes.go:29.49,31.2 1 0
+github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram/routes.go:33.56,35.2 1 0
+github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram/routes.go:37.51,39.2 1 0
