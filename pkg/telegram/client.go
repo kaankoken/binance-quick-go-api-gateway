@@ -9,7 +9,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 )
 
-var ClientModule = fx.Options(fx.Provide(InitServiceClient))
+var ClientModule = fx.Options(fx.Provide(InitServiceClient), fx.Provide(Initialize))
 
 type ServiceClient struct {
 	Client pb.TelegramServiceClient

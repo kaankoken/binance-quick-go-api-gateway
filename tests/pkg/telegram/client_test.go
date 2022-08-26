@@ -95,7 +95,6 @@ func TestClientWithFx(t *testing.T) {
 			config.Module,
 			telegram.ClientModule,
 			helper.LoggerModule,
-			fx.Provide(telegram.Initialize),
 			fx.Populate(&h),
 			fx.Populate(&g),
 		).RequireStart()
@@ -111,8 +110,8 @@ func generateFakeSuccessfulConfig(tb testing.TB) {
 	os.Remove("config.env")
 
 	fakeConfig := `
-	FLAVOR=de
-	GIN_MODE=uat
+	FLAVOR=debug
+	GIN_MODE=test
 	PORT=:6542
 	AUTH_SVC_URL=localhost:1
 	OBSERVER_SVC_URL=localhost:2
