@@ -7,9 +7,9 @@ import (
 	"go.uber.org/fx"
 )
 
-var RouteModule = fx.Options(fx.Invoke(registerRoutes))
+var RouteModule = fx.Options(fx.Invoke(RegisterRoutes))
 
-func registerRoutes(client *ServiceClient, handler *pkg.Handler) {
+func RegisterRoutes(client ServiceClient, handler *pkg.Handler) {
 	routes := handler.Gin.Group("/telegram")
 	routes.POST("/", client.Start)
 	routes.POST("/healthz", client.Status)
@@ -22,18 +22,18 @@ func registerRoutes(client *ServiceClient, handler *pkg.Handler) {
 	})
 }
 
-func (svc *ServiceClient) Start(ctx *gin.Context) {
+func (svc ServiceClient) Start(ctx *gin.Context) {
 	routes.Start(ctx, svc.Logger, svc.Client)
 }
 
-func (svc *ServiceClient) Stop(ctx *gin.Context) {
+func (svc ServiceClient) Stop(ctx *gin.Context) {
 	routes.Stop(ctx, svc.Logger, svc.Client)
 }
 
-func (svc *ServiceClient) SendMessage(ctx *gin.Context) {
+func (svc ServiceClient) SendMessage(ctx *gin.Context) {
 	routes.SendMessage(ctx, svc.Logger, svc.Client)
 }
 
-func (svc *ServiceClient) Status(ctx *gin.Context) {
+func (svc ServiceClient) Status(ctx *gin.Context) {
 	routes.Status(ctx, svc.Logger, svc.Client)
 }
