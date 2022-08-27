@@ -105,6 +105,7 @@ import (
         "github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram"
 )
 
+// MainApp -&gt; Registering main app to FX
 func MainApp() *fx.App <span class="cov1" title="1">{
         app := fx.New(
                 config.Module,
@@ -118,6 +119,7 @@ func MainApp() *fx.App <span class="cov1" title="1">{
         return app
 }</span>
 
+// RegisterHooks -&gt; Registering lifecycle of fx &amp; running http server (Gin)
 func RegisterHooks(lifecycle fx.Lifecycle, h *pkg.Handler, config *config.Config, logger *helper.LogHandler) <span class="cov10" title="2">{
         lifecycle.Append(
                 fx.Hook{
@@ -142,17 +144,32 @@ import (
         "go.uber.org/fx"
 )
 
+// Module -&gt; Dependency Injection for Config
 var Module = fx.Options(fx.Provide(LoadConfig))
 
+/*
+Config -&gt; Data Model for Config
+
+[Port] -&gt; Http server port number
+[Flavor] -&gt; It could be dev/uat/prod etc
+[Mode] -&gt; It likes debug or release
+[AuthSvcUrl] -&gt; Auth server port number
+[ObserverSvcUrl] -&gt; Observer server port number
+[TelegramSvcUrl] -&gt; Telegram server port number
+*/
 type Config struct {
         Port           string `mapstructure:"PORT"`
         Flavor         string `mapstructure:"FLAVOR"`
         Mode           string `mapstructure:"GIN_MODE"`
-        AuthSvcUrl     string `mapstructure:"AUTH_SVC_URL"`
-        ObserverSvcUrl string `mapstructure:"OBSERVER_SVC_URL"`
-        TelegramSvcUrl string `mapstructure:"TELEGRAM_SVC_URL"`
+        AuthSvcURL     string `mapstructure:"AUTH_SVC_URL"`
+        ObserverSvcURL string `mapstructure:"OBSERVER_SVC_URL"`
+        TelegramSvcURL string `mapstructure:"TELEGRAM_SVC_URL"`
 }
 
+/*
+LoadConfig -&gt; reading config.env using viper
+[return] -&gt; returns {Config Data Model} if reads config.env or {error} cannot reads or unmarshal it
+*/
 func LoadConfig() (c *Config, err error) <span class="cov10" title="5">{
         viper.SetConfigType("env")
 
@@ -186,12 +203,20 @@ import (
         "go.uber.org/fx"
 )
 
+// EngineModule -&gt; Dependency Injection for Gin Engine
 var EngineModule = fx.Options(fx.Provide(NewHandler))
 
+// Handler -&gt; Dependency Injection Data Model for Gin Engine
 type Handler struct {
         Gin *gin.Engine
 }
 
+/*
+NewHandler -&gt; Gin Engine initialization according to Mode
+[config] -&gt; Takes config as a parameter &amp; checks {mode} for correct initialization
+
+[return] -&gt; returns Handler if config.Mode {correct} or {error}
+*/
 func NewHandler(config *config.Config) (h *Handler, err error) <span class="cov10" title="3">{
         if gin.DebugMode != config.Mode &amp;&amp; gin.TestMode != config.Mode &amp;&amp; gin.ReleaseMode != config.Mode </span><span class="cov1" title="1">{
                 return nil, fmt.Errorf("incorrect mode type")
@@ -212,54 +237,93 @@ import (
         "go.uber.org/fx"
 )
 
+// DebugModule -&gt; Dependency Injection for Debug logger
+var DebugModule = fx.Options(fx.Provide(SetLoggerFormat))
+
+// DLogger -&gt; Dependency Injection Data Model for Debug logger
 type DLogger struct {
         Logger *log.Logger
 }
-
-var DebugModule = fx.Options(
-        fx.Provide(SetLoggerFormat),
-)
 
 const (
         tag string = "Binance-Quick-Go-Api-Gateway -&gt; "
 )
 
+/*
+SetLoggerFormat -&gt; Debug logger formatter initialization
+
+[return] -&gt; DLogger with initialized logger
+*/
 func SetLoggerFormat() *DLogger <span class="cov4" title="2">{
         log.SetFormatter(&amp;log.TextFormatter{})
 
         return &amp;DLogger{Logger: &amp;log.Logger{}}
 }</span>
 
+/*
+Error -&gt; Debug logger error logger without callback
+
+        -&gt; Checks whether error {nil} or {not}
+
+[err] -&gt; take parameter as error
+
+[return] -&gt; returns tag with {error} or {nil} if error does not {exist}
+*/
 func (logger DLogger) Error(err error) error <span class="cov7" title="4">{
         if err != nil </span><span class="cov4" title="2">{
-                log.Errorf(tag, err.Error())
+                logger.Logger.Error(tag, err.Error())
 
-                return fmt.Errorf(tag + err.Error())
+                return fmt.Errorf("%s", tag+err.Error())
         }</span>
 
         <span class="cov4" title="2">return nil</span>
 }
 
+/*
+ErrorWithCallback -&gt; Debug logger error logger with callback
+
+        -&gt; Checks whether error {nil} or {not}
+
+[err] -&gt; take parameter as error
+[f] -&gt; callback method needs to be called if error {exist}
+
+[return] -&gt; returns tag with {error} or {nil} if error does not {exist}
+*/
 func (logger DLogger) ErrorWithCallback(err error, f func()) error <span class="cov10" title="6">{
         if err != nil </span><span class="cov7" title="4">{
                 f()
-                log.Errorf(tag, err.Error())
+                logger.Logger.Error(tag, err.Error())
 
-                return fmt.Errorf(tag + err.Error())
+                return fmt.Errorf("%s", tag+err.Error())
         }</span>
 
         <span class="cov4" title="2">return nil</span>
 }
 
+/*
+Info -&gt; Debug logger info logger without callback
+
+[msg] -&gt; take string message as parameter
+
+[return] -&gt; returns tag with {msg}
+*/
 func (logger DLogger) Info(msg string) string <span class="cov4" title="2">{
-        log.Infoln(tag, msg)
+        logger.Logger.Infoln(tag, msg)
 
         return fmt.Sprintf(tag + msg)
 }</span>
 
+/*
+InfoWithCallback -&gt; Debug logger info logger without callback
+
+[msg] -&gt; take string message as parameter
+[f] -&gt; callback method needs to be called
+
+[return] -&gt; returns tag with {msg}
+*/
 func (logger DLogger) InfoWithCallback(msg string, f func()) string <span class="cov7" title="4">{
         f()
-        log.Infoln(tag, msg)
+        logger.Logger.Infoln(tag, msg)
 
         return fmt.Sprintf(tag + msg)
 }</span>
@@ -276,12 +340,14 @@ const (
         dev string = "dev"
 )
 
+// LoggerModule -&gt; Dependency Injection for General logger module
 var LoggerModule = fx.Options(
         DebugModule,
         ReleaseModule,
         fx.Provide(Initialize),
 )
 
+// ILogHandler -&gt; General interface that both RLogger &amp; DLogger use
 type ILogHandler interface {
         Error(err error) error
         ErrorWithCallback(err error, f func()) error
@@ -289,11 +355,21 @@ type ILogHandler interface {
         InfoWithCallback(msg string, f func()) string
 }
 
+// LogHandler -&gt; Dependency Injection Data Model for LoggerModule needs
 type LogHandler struct {
         debug, release *ILogHandler
         config         *config.Config
 }
 
+/*
+Initialize -&gt; Initialize General logger
+
+[c] -&gt; Passing config to seperate according to debug or release mode
+[D] -&gt; Passing DLogger to generate LogHandler
+[R] -&gt; Passing RLogger to generate LogHandler
+
+[return] -&gt; returns Generated LogHandler
+*/
 func Initialize(c *config.Config, D *DLogger, R *RLogger) *LogHandler <span class="cov4" title="2">{
         var d, r ILogHandler
 
@@ -303,6 +379,16 @@ func Initialize(c *config.Config, D *DLogger, R *RLogger) *LogHandler <span clas
         return &amp;LogHandler{debug: &amp;d, release: &amp;r, config: c}
 }</span>
 
+/*
+Error -&gt; LogHandler error logger without callback
+
+        -&gt; Checks whether error {nil} or {not}
+        -&gt; Calls {logger} according to {flavor}
+
+[err] -&gt; take parameter as error
+
+[return] -&gt; returns tag with {error} or {nil} if error does not {exist}
+*/
 func (l LogHandler) Error(err error) error <span class="cov7" title="4">{
         if l.config.Flavor == dev </span><span class="cov4" title="2">{
                 return (*l.debug).Error(err)
@@ -311,6 +397,17 @@ func (l LogHandler) Error(err error) error <span class="cov7" title="4">{
         <span class="cov4" title="2">return (*l.release).Error(err)</span>
 }
 
+/*
+ErrorWithCallback -&gt; LogHandler error logger with callback
+
+        -&gt; Checks whether error {nil} or {not}
+        -&gt; Calls {logger} according to {flavor}
+
+[err] -&gt; take parameter as error
+[f] -&gt; callback method needs to be called if error {exist}
+
+[return] -&gt; returns tag with {error} or {nil} if error does not {exist}
+*/
 func (l LogHandler) ErrorWithCallback(err error, f func()) error <span class="cov10" title="6">{
         if l.config.Flavor == dev </span><span class="cov6" title="3">{
                 return (*l.debug).ErrorWithCallback(err, f)
@@ -319,6 +416,15 @@ func (l LogHandler) ErrorWithCallback(err error, f func()) error <span class="co
         <span class="cov6" title="3">return (*l.release).ErrorWithCallback(err, f)</span>
 }
 
+/*
+Info -&gt; LogHandler info logger without callback
+
+        -&gt; Calls {logger} according to {flavor}
+
+[msg] -&gt; take string message as parameter
+
+[return] -&gt; returns tag with {msg}
+*/
 func (l LogHandler) Info(msg string) string <span class="cov4" title="2">{
         if l.config.Flavor == dev </span><span class="cov1" title="1">{
                 return (*l.debug).Info(msg)
@@ -327,6 +433,16 @@ func (l LogHandler) Info(msg string) string <span class="cov4" title="2">{
         <span class="cov1" title="1">return (*l.release).Info(msg)</span>
 }
 
+/*
+InfoWithCallback -&gt; LogHandler info logger without callback
+
+        -&gt; Calls {logger} according to {flavor}
+
+[msg] -&gt; take string message as parameter
+[f] -&gt; callback method needs to be called
+
+[return] -&gt; returns tag with {msg}
+*/
 func (l LogHandler) InfoWithCallback(msg string, f func()) string <span class="cov7" title="4">{
         if l.config.Flavor == dev </span><span class="cov4" title="2">{
                 return (*l.debug).InfoWithCallback(msg, f)
@@ -348,10 +464,7 @@ import (
         "go.uber.org/zap/zapcore"
 )
 
-type RLogger struct {
-        Logger *zap.Logger
-}
-
+// ReleaseModule -&gt; Dependency Injection for Release logger
 var ReleaseModule = fx.Options(
         fx.Provide(InitializeLogger, InitializeLoggerPtr),
         fx.WithLogger(func(logger *zap.Logger) fxevent.Logger <span class="cov3" title="2">{
@@ -359,6 +472,18 @@ var ReleaseModule = fx.Options(
         }</span>),
 )
 
+// RLogger -&gt; Dependency Injection Data Model for Release logger
+type RLogger struct {
+        Logger *zap.Logger
+}
+
+/*
+InitializeLogger -&gt; Initialize zap logger for release mode
+
+        -&gt; Generate zap logger for both {command line} &amp; logger to {text file}
+
+[return] -&gt; return zap.logger
+*/
 func InitializeLogger() *zap.Logger <span class="cov4" title="3">{
         config := zap.NewProductionEncoderConfig()
         config.EncodeTime = zapcore.ISO8601TimeEncoder
@@ -375,10 +500,26 @@ func InitializeLogger() *zap.Logger <span class="cov4" title="3">{
         return zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
 }</span>
 
+/*
+InitializeLoggerPtr -&gt; Generate RLogger
+
+[logger] -&gt; takes argument as zap.logger
+
+[return] -&gt; returns {Rlogger} that generated with {zap.logger}
+*/
 func InitializeLoggerPtr(logger *zap.Logger) *RLogger <span class="cov3" title="2">{
         return &amp;RLogger{Logger: logger}
 }</span>
 
+/*
+Error -&gt; Release logger error logger without callback
+
+        -&gt; Checks whether error {nil} or {not}
+
+[err] -&gt; take parameter as error
+
+[return] -&gt; returns tag with {error} or {nil} if error does not {exist}
+*/
 func (logger RLogger) Error(err error) error <span class="cov5" title="4">{
         if err != nil </span><span class="cov3" title="2">{
                 logger.Logger.Error(tag + err.Error())
@@ -389,6 +530,16 @@ func (logger RLogger) Error(err error) error <span class="cov5" title="4">{
         <span class="cov3" title="2">return nil</span>
 }
 
+/*
+ErrorWithCallback -&gt; Release logger error logger with callback
+
+        -&gt; Checks whether error {nil} or {not}
+
+[err] -&gt; take parameter as error
+[f] -&gt; callback method needs to be called if error {exist}
+
+[return] -&gt; returns tag with {error} or {nil} if error does not {exist}
+*/
 func (logger RLogger) ErrorWithCallback(err error, f func()) error <span class="cov6" title="6">{
         if err != nil </span><span class="cov5" title="4">{
                 f()
@@ -400,12 +551,27 @@ func (logger RLogger) ErrorWithCallback(err error, f func()) error <span class="
         <span class="cov3" title="2">return nil</span>
 }
 
+/*
+Info -&gt; Release logger info logger without callback
+
+[msg] -&gt; take string message as parameter
+
+[return] -&gt; returns tag with {msg}
+*/
 func (logger RLogger) Info(msg string) string <span class="cov3" title="2">{
         logger.Logger.Info(tag + msg)
 
         return fmt.Sprintf(tag + msg)
 }</span>
 
+/*
+InfoWithCallback -&gt; Release logger info logger without callback
+
+[msg] -&gt; take string message as parameter
+[f] -&gt; callback method needs to be called
+
+[return] -&gt; returns tag with {msg}
+*/
 func (logger *RLogger) InfoWithCallback(msg string, f func()) string <span class="cov5" title="4">{
         f()
         logger.Logger.Info(tag + msg)
@@ -413,68 +579,73 @@ func (logger *RLogger) InfoWithCallback(msg string, f func()) string <span class
         return fmt.Sprintf(tag + msg)
 }</span>
 
-func (l RLogger) LogEvent(event fxevent.Event) <span class="cov10" title="22">{
+/*
+LogEvent -&gt; Release logger for logging fx event
+
+[event] -&gt; take argument as fx.event
+*/
+func (logger RLogger) LogEvent(event fxevent.Event) <span class="cov10" title="22">{
         switch e := event.(type) </span>{
         case *fxevent.OnStartExecuting:<span class="cov0" title="0">
-                l.Logger.Debug("OnStart hook executing: ",
+                logger.Logger.Debug("OnStart hook executing: ",
                         zap.String("callee", e.FunctionName),
                         zap.String("caller", e.CallerName),
                 )</span>
         case *fxevent.OnStartExecuted:<span class="cov0" title="0">
                 if e.Err != nil </span><span class="cov0" title="0">{
-                        l.Logger.Debug("OnStart hook failed: ",
+                        logger.Logger.Debug("OnStart hook failed: ",
                                 zap.String("callee", e.FunctionName),
                                 zap.String("caller", e.CallerName),
                                 zap.Error(e.Err),
                         )
                 }</span> else<span class="cov0" title="0"> {
-                        l.Logger.Debug("OnStart hook executed: ",
+                        logger.Logger.Debug("OnStart hook executed: ",
                                 zap.String("callee", e.FunctionName),
                                 zap.String("caller", e.CallerName),
                                 zap.String("runtime", e.Runtime.String()),
                         )
                 }</span>
         case *fxevent.OnStopExecuting:<span class="cov0" title="0">
-                l.Logger.Debug("OnStop hook executing: ",
+                logger.Logger.Debug("OnStop hook executing: ",
                         zap.String("callee", e.FunctionName),
                         zap.String("caller", e.CallerName),
                 )</span>
         case *fxevent.OnStopExecuted:<span class="cov0" title="0">
                 if e.Err != nil </span><span class="cov0" title="0">{
-                        l.Logger.Debug("OnStop hook failed: ",
+                        logger.Logger.Debug("OnStop hook failed: ",
                                 zap.String("callee", e.FunctionName),
                                 zap.String("caller", e.CallerName),
                                 zap.Error(e.Err),
                         )
                 }</span> else<span class="cov0" title="0"> {
-                        l.Logger.Debug("OnStop hook executed: ",
+                        logger.Logger.Debug("OnStop hook executed: ",
                                 zap.String("callee", e.FunctionName),
                                 zap.String("caller", e.CallerName),
                                 zap.String("runtime", e.Runtime.String()),
                         )
                 }</span>
         case *fxevent.Supplied:<span class="cov0" title="0">
-                l.Logger.Debug("supplied: ", zap.String("type", e.TypeName), zap.Error(e.Err))</span>
+                logger.Logger.Debug("supplied: ", zap.String("type", e.TypeName), zap.Error(e.Err))</span>
         case *fxevent.Provided:<span class="cov7" title="10">
                 for _, rtype := range e.OutputTypeNames </span><span class="cov7" title="10">{
-                        l.Logger.Debug("provided: " + e.ConstructorName + " =&gt; " + rtype)
+                        logger.Logger.Debug("provided: " + e.ConstructorName + " =&gt; " + rtype)
                 }</span>
         case *fxevent.Decorated:<span class="cov0" title="0">
                 for _, rtype := range e.OutputTypeNames </span><span class="cov0" title="0">{
-                        l.Logger.Debug("decorated: ",
+                        logger.Logger.Debug("decorated: ",
                                 zap.String("decorator", e.DecoratorName),
                                 zap.String("type", rtype),
                         )
                 }</span>
         case *fxevent.Invoking:<span class="cov4" title="3">
-                l.Logger.Debug("invoking: " + e.FunctionName)</span>
+                logger.Logger.Debug("invoking: " + e.FunctionName)</span>
         case *fxevent.Started:<span class="cov3" title="2">
                 if e.Err == nil </span><span class="cov3" title="2">{
-                        l.Logger.Debug("started")
+                        logger.Logger.Debug("started")
                 }</span>
         case *fxevent.LoggerInitialized:<span class="cov3" title="2">
                 if e.Err == nil </span><span class="cov3" title="2">{
-                        l.Logger.Debug("initialized: custom fxevent.Logger -&gt; " + e.ConstructorName)
+                        logger.Logger.Debug("initialized: custom fxevent.Logger -&gt; " + e.ConstructorName)
                 }</span>
         }
 }
@@ -491,6 +662,7 @@ import (
         "google.golang.org/grpc/credentials/insecure"
 )
 
+// ClientModule -&gt; Dependency Injection for Client module
 var ClientModule = fx.Options(fx.Provide(InitServiceClient), fx.Provide(Initialize))
 
 type ServiceClient struct {
@@ -498,15 +670,21 @@ type ServiceClient struct {
         Logger *helper.LogHandler
 }
 
-func Initialize(client pb.TelegramServiceClient, logger *helper.LogHandler) ServiceClient <span class="cov5" title="2">{
+// Initialize -&gt; Dependency Injection for Client module
+func Initialize(client pb.TelegramServiceClient, logger *helper.LogHandler) ServiceClient <span class="cov7" title="3">{
         return ServiceClient{
                 Client: client,
                 Logger: logger,
         }
 }</span>
 
-func InitServiceClient(c *config.Config, logger *helper.LogHandler) pb.TelegramServiceClient <span class="cov10" title="4">{
-        cc, err := grpc.Dial(c.TelegramSvcUrl, grpc.WithTransportCredentials(insecure.NewCredentials()))
+/*
+InitServiceClient -&gt; Generate grpc client for Api Gateway
+
+[return] -&gt; returns TelegramServiceClient using generated with grpc client
+*/
+func InitServiceClient(c *config.Config, logger *helper.LogHandler) pb.TelegramServiceClient <span class="cov10" title="5">{
+        cc, err := grpc.Dial(c.TelegramSvcURL, grpc.WithTransportCredentials(insecure.NewCredentials()))
         logger.Error(err)
 
         return pb.NewTelegramServiceClient(cc)
