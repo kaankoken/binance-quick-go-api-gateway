@@ -28,6 +28,11 @@ jobs:
       - name: Verify dependencies
         run: go mod verify
 
+      - name: Install protobuf
+        run: |
+          apt install -y protobuf-compiler
+          protoc --version 
+
       - name: Install grpc packages
         run: |
           go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
