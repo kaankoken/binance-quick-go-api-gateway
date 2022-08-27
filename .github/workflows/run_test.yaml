@@ -29,10 +29,9 @@ jobs:
         run: go mod verify
 
       - name: Install protobuf
-        run: |
-          apt install -y protobuf-compiler
-          protoc --version 
-
+        uses: arduino/setup-protoc@v1
+        run: protoc --version 
+          
       - name: Install grpc packages
         run: |
           go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
