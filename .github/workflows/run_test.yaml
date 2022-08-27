@@ -28,6 +28,15 @@ jobs:
       - name: Verify dependencies
         run: go mod verify
 
+      - name: Install grpc packages
+        run: |
+          go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.28
+          go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@v1.2
+          export PATH="$PATH:$(go env GOPATH)/bin"
+
+      - name: Generate Proto files
+        run: make proto
+
       - name: Decode production env file
         working-directory: ${{ github.workspace }}
         run: |
