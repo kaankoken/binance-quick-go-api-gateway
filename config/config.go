@@ -5,17 +5,32 @@ import (
 	"go.uber.org/fx"
 )
 
+// Module -> Dependency Injection for Config
 var Module = fx.Options(fx.Provide(LoadConfig))
 
+/*
+Config -> Data Model for Config
+
+[Port] -> Http server port number
+[Flavor] -> It could be dev/uat/prod etc
+[Mode] -> It likes debug or release
+[AuthSvcUrl] -> Auth server port number
+[ObserverSvcUrl] -> Observer server port number
+[TelegramSvcUrl] -> Telegram server port number
+*/
 type Config struct {
 	Port           string `mapstructure:"PORT"`
 	Flavor         string `mapstructure:"FLAVOR"`
 	Mode           string `mapstructure:"GIN_MODE"`
-	AuthSvcUrl     string `mapstructure:"AUTH_SVC_URL"`
-	ObserverSvcUrl string `mapstructure:"OBSERVER_SVC_URL"`
-	TelegramSvcUrl string `mapstructure:"TELEGRAM_SVC_URL"`
+	AuthSvcURL     string `mapstructure:"AUTH_SVC_URL"`
+	ObserverSvcURL string `mapstructure:"OBSERVER_SVC_URL"`
+	TelegramSvcURL string `mapstructure:"TELEGRAM_SVC_URL"`
 }
 
+/*
+LoadConfig -> reading config.env using viper
+[return] -> returns {Config Data Model} if reads config.env or {error} cannot reads or unmarshal it
+*/
 func LoadConfig() (c *Config, err error) {
 	viper.SetConfigType("env")
 

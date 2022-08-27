@@ -9,8 +9,16 @@ import (
 	"github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram/pb"
 )
 
+// StatusMessageBody -> Empty body
 type StatusMessageBody struct{}
 
+/*
+Status -> Endpoint on telegram microservice
+
+[ctx] ->
+[logger] ->
+[client] ->
+*/
 func Status(ctx *gin.Context, logger *helper.LogHandler, client pb.TelegramServiceClient) {
 	body := StatusMessageBody{}
 

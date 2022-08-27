@@ -57,6 +57,24 @@ func TestClient(t *testing.T) {
 		assert.IsType(t, &service, &compareType)
 		assert.IsType(t, &structCompareType, &res)
 	})
+
+	t.Run("client-init=svc-error", func(t *testing.T) {
+		var compareType pb.TelegramServiceClient
+		var structCompareType telegram.ServiceClient
+
+		c, err := config.LoadConfig()
+
+		// log handler initialization
+		l := helper.Initialize(c, d, r)
+		c.TelegramSvcURL = ""
+		service := telegram.InitServiceClient(c, l)
+		res := telegram.Initialize(compareType, l)
+
+		assert.Nil(t, err)
+		assert.NotNil(t, c)
+		assert.IsType(t, &service, &compareType)
+		assert.IsType(t, &structCompareType, &res)
+	})
 }
 
 func TestClientWithFx(t *testing.T) {

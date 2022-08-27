@@ -11,6 +11,7 @@ import (
 	"github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram"
 )
 
+// MainApp -> Registering main app to FX
 func MainApp() *fx.App {
 	app := fx.New(
 		config.Module,
@@ -24,6 +25,7 @@ func MainApp() *fx.App {
 	return app
 }
 
+// RegisterHooks -> Registering lifecycle of fx & running http server (Gin)
 func RegisterHooks(lifecycle fx.Lifecycle, h *pkg.Handler, config *config.Config, logger *helper.LogHandler) {
 	lifecycle.Append(
 		fx.Hook{

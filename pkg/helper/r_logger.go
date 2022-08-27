@@ -10,10 +10,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-type RLogger struct {
-	Logger *zap.Logger
-}
-
+// ReleaseModule -> Dependency Injection for Release logger
 var ReleaseModule = fx.Options(
 	fx.Provide(InitializeLogger, InitializeLoggerPtr),
 	fx.WithLogger(func(logger *zap.Logger) fxevent.Logger {
@@ -21,6 +18,18 @@ var ReleaseModule = fx.Options(
 	}),
 )
 
+// RLogger -> Dependency Injection Data Model for Release logger
+type RLogger struct {
+	Logger *zap.Logger
+}
+
+/*
+InitializeLogger -> Initialize zap logger for release mode
+
+	-> Generate zap logger for both {command line} & logger to {text file}
+
+[return] -> return zap.logger
+*/
 func InitializeLogger() *zap.Logger {
 	config := zap.NewProductionEncoderConfig()
 	config.EncodeTime = zapcore.ISO8601TimeEncoder
@@ -37,10 +46,26 @@ func InitializeLogger() *zap.Logger {
 	return zap.New(core, zap.AddCaller(), zap.AddStacktrace(zapcore.ErrorLevel))
 }
 
+/*
+InitializeLoggerPtr -> Generate RLogger
+
+[logger] -> takes argument as zap.logger
+
+[return] -> returns {Rlogger} that generated with {zap.logger}
+*/
 func InitializeLoggerPtr(logger *zap.Logger) *RLogger {
 	return &RLogger{Logger: logger}
 }
 
+/*
+Error -> Release logger error logger without callback
+
+	-> Checks whether error {nil} or {not}
+
+[err] -> take parameter as error
+
+[return] -> returns tag with {error} or {nil} if error does not {exist}
+*/
 func (logger RLogger) Error(err error) error {
 	if err != nil {
 		logger.Logger.Error(tag + err.Error())
@@ -51,6 +76,16 @@ func (logger RLogger) Error(err error) error {
 	return nil
 }
 
+/*
+ErrorWithCallback -> Release logger error logger with callback
+
+	-> Checks whether error {nil} or {not}
+
+[err] -> take parameter as error
+[f] -> callback method needs to be called if error {exist}
+
+[return] -> returns tag with {error} or {nil} if error does not {exist}
+*/
 func (logger RLogger) ErrorWithCallback(err error, f func()) error {
 	if err != nil {
 		f()
@@ -62,12 +97,27 @@ func (logger RLogger) ErrorWithCallback(err error, f func()) error {
 	return nil
 }
 
+/*
+Info -> Release logger info logger without callback
+
+[msg] -> take string message as parameter
+
+[return] -> returns tag with {msg}
+*/
 func (logger RLogger) Info(msg string) string {
 	logger.Logger.Info(tag + msg)
 
 	return fmt.Sprintf(tag + msg)
 }
 
+/*
+InfoWithCallback -> Release logger info logger without callback
+
+[msg] -> take string message as parameter
+[f] -> callback method needs to be called
+
+[return] -> returns tag with {msg}
+*/
 func (logger *RLogger) InfoWithCallback(msg string, f func()) string {
 	f()
 	logger.Logger.Info(tag + msg)
@@ -75,68 +125,73 @@ func (logger *RLogger) InfoWithCallback(msg string, f func()) string {
 	return fmt.Sprintf(tag + msg)
 }
 
-func (l RLogger) LogEvent(event fxevent.Event) {
+/*
+LogEvent -> Release logger for logging fx event
+
+[event] -> take argument as fx.event
+*/
+func (logger RLogger) LogEvent(event fxevent.Event) {
 	switch e := event.(type) {
 	case *fxevent.OnStartExecuting:
-		l.Logger.Debug("OnStart hook executing: ",
+		logger.Logger.Debug("OnStart hook executing: ",
 			zap.String("callee", e.FunctionName),
 			zap.String("caller", e.CallerName),
 		)
 	case *fxevent.OnStartExecuted:
 		if e.Err != nil {
-			l.Logger.Debug("OnStart hook failed: ",
+			logger.Logger.Debug("OnStart hook failed: ",
 				zap.String("callee", e.FunctionName),
 				zap.String("caller", e.CallerName),
 				zap.Error(e.Err),
 			)
 		} else {
-			l.Logger.Debug("OnStart hook executed: ",
+			logger.Logger.Debug("OnStart hook executed: ",
 				zap.String("callee", e.FunctionName),
 				zap.String("caller", e.CallerName),
 				zap.String("runtime", e.Runtime.String()),
 			)
 		}
 	case *fxevent.OnStopExecuting:
-		l.Logger.Debug("OnStop hook executing: ",
+		logger.Logger.Debug("OnStop hook executing: ",
 			zap.String("callee", e.FunctionName),
 			zap.String("caller", e.CallerName),
 		)
 	case *fxevent.OnStopExecuted:
 		if e.Err != nil {
-			l.Logger.Debug("OnStop hook failed: ",
+			logger.Logger.Debug("OnStop hook failed: ",
 				zap.String("callee", e.FunctionName),
 				zap.String("caller", e.CallerName),
 				zap.Error(e.Err),
 			)
 		} else {
-			l.Logger.Debug("OnStop hook executed: ",
+			logger.Logger.Debug("OnStop hook executed: ",
 				zap.String("callee", e.FunctionName),
 				zap.String("caller", e.CallerName),
 				zap.String("runtime", e.Runtime.String()),
 			)
 		}
 	case *fxevent.Supplied:
-		l.Logger.Debug("supplied: ", zap.String("type", e.TypeName), zap.Error(e.Err))
+		logger.Logger.Debug("supplied: ", zap.String("type", e.TypeName), zap.Error(e.Err))
 	case *fxevent.Provided:
 		for _, rtype := range e.OutputTypeNames {
-			l.Logger.Debug("provided: " + e.ConstructorName + " => " + rtype)
+			logger.Logger.Debug("provided: " + e.ConstructorName + " => " + rtype)
 		}
 	case *fxevent.Decorated:
 		for _, rtype := range e.OutputTypeNames {
-			l.Logger.Debug("decorated: ",
+			logger.Logger.Debug("decorated: ",
 				zap.String("decorator", e.DecoratorName),
 				zap.String("type", rtype),
 			)
 		}
 	case *fxevent.Invoking:
-		l.Logger.Debug("invoking: " + e.FunctionName)
+		logger.Logger.Debug("invoking: " + e.FunctionName)
 	case *fxevent.Started:
 		if e.Err == nil {
-			l.Logger.Debug("started")
+			logger.Logger.Debug("started")
 		}
 	case *fxevent.LoggerInitialized:
 		if e.Err == nil {
-			l.Logger.Debug("initialized: custom fxevent.Logger -> " + e.ConstructorName)
+			logger.Logger.Debug("initialized: custom fxevent.Logger -> " + e.ConstructorName)
 		}
 	}
 }
