@@ -42,19 +42,19 @@ func TestConfig(t *testing.T) {
 		assert.Nil(t, err)
 		assert.NotNil(t, c)
 
-		assert.Empty(t, c.AuthSvcUrl)
+		assert.Empty(t, c.AuthSvcURL)
 		assert.Empty(t, c.Flavor)
 		assert.Empty(t, c.Mode)
-		assert.Empty(t, c.ObserverSvcUrl)
+		assert.Empty(t, c.ObserverSvcURL)
 		assert.Empty(t, c.Port)
-		assert.Empty(t, c.TelegramSvcUrl)
+		assert.Empty(t, c.TelegramSvcURL)
 
-		assert.Equal(t, c.AuthSvcUrl, "")
+		assert.Equal(t, c.AuthSvcURL, "")
 		assert.Equal(t, c.Flavor, "")
 		assert.Equal(t, c.Mode, "")
-		assert.Equal(t, c.ObserverSvcUrl, "")
+		assert.Equal(t, c.ObserverSvcURL, "")
 		assert.Equal(t, c.Port, "")
-		assert.Equal(t, c.TelegramSvcUrl, "")
+		assert.Equal(t, c.TelegramSvcURL, "")
 	})
 
 	t.Run("config=success", func(t *testing.T) {
@@ -64,19 +64,19 @@ func TestConfig(t *testing.T) {
 		assert.Nil(t, err)
 		assert.NotNil(t, c)
 
-		assert.NotEmpty(t, c.AuthSvcUrl)
+		assert.NotEmpty(t, c.AuthSvcURL)
 		assert.NotEmpty(t, c.Flavor)
 		assert.NotEmpty(t, c.Mode)
-		assert.NotEmpty(t, c.ObserverSvcUrl)
+		assert.NotEmpty(t, c.ObserverSvcURL)
 		assert.NotEmpty(t, c.Port)
-		assert.NotEmpty(t, c.TelegramSvcUrl)
+		assert.NotEmpty(t, c.TelegramSvcURL)
 
-		assert.Equal(t, c.AuthSvcUrl, "localhost:1")
+		assert.Equal(t, c.AuthSvcURL, "localhost:1")
 		assert.Equal(t, c.Flavor, "de")
 		assert.Equal(t, c.Mode, "uat")
-		assert.Equal(t, c.ObserverSvcUrl, "localhost:2")
+		assert.Equal(t, c.ObserverSvcURL, "localhost:2")
 		assert.Equal(t, c.Port, ":6542")
-		assert.Equal(t, c.TelegramSvcUrl, "localhost:3")
+		assert.Equal(t, c.TelegramSvcURL, "localhost:3")
 	})
 }
 
@@ -104,19 +104,19 @@ func TestConfigWithFx(t *testing.T) {
 		require.NoError(t, app.Err())
 		assert.Contains(t, g, `"fx.DotGraph" [label=<fx.DotGraph>];`)
 
-		assert.NotEmpty(t, data.AuthSvcUrl)
+		assert.NotEmpty(t, data.AuthSvcURL)
 		assert.NotEmpty(t, data.Flavor)
 		assert.NotEmpty(t, data.Mode)
-		assert.NotEmpty(t, data.ObserverSvcUrl)
+		assert.NotEmpty(t, data.ObserverSvcURL)
 		assert.NotEmpty(t, data.Port)
-		assert.NotEmpty(t, data.TelegramSvcUrl)
+		assert.NotEmpty(t, data.TelegramSvcURL)
 
-		assert.Equal(t, data.AuthSvcUrl, "localhost:1")
+		assert.Equal(t, data.AuthSvcURL, "localhost:1")
 		assert.Equal(t, data.Flavor, "de")
 		assert.Equal(t, data.Mode, "uat")
-		assert.Equal(t, data.ObserverSvcUrl, "localhost:2")
+		assert.Equal(t, data.ObserverSvcURL, "localhost:2")
 		assert.Equal(t, data.Port, ":6542")
-		assert.Equal(t, data.TelegramSvcUrl, "localhost:3")
+		assert.Equal(t, data.TelegramSvcURL, "localhost:3")
 	})
 }
 

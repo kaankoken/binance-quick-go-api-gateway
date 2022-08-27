@@ -9,10 +9,21 @@ import (
 	"github.com/kaankoken/binance-quick-go-api-gateway/pkg/telegram/pb"
 )
 
+/*
+SendMessageBody -> body of the SendMessage endpoint
+[Message] -> Takes string in the body
+*/
 type SendMessageBody struct {
 	Message string `json:"message"`
 }
 
+/*
+SendMessage -> Endpoint on telegram microservice
+
+[ctx] ->
+[logger] ->
+[client] ->
+*/
 func SendMessage(ctx *gin.Context, logger *helper.LogHandler, client pb.TelegramServiceClient) {
 	body := SendMessageBody{}
 

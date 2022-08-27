@@ -9,12 +9,14 @@ const (
 	dev string = "dev"
 )
 
+// LoggerModule -> Dependency Injection for General logger module
 var LoggerModule = fx.Options(
 	DebugModule,
 	ReleaseModule,
 	fx.Provide(Initialize),
 )
 
+// ILogHandler -> General interface that both RLogger & DLogger use
 type ILogHandler interface {
 	Error(err error) error
 	ErrorWithCallback(err error, f func()) error
@@ -22,11 +24,21 @@ type ILogHandler interface {
 	InfoWithCallback(msg string, f func()) string
 }
 
+// LogHandler -> Dependency Injection Data Model for LoggerModule needs
 type LogHandler struct {
 	debug, release *ILogHandler
 	config         *config.Config
 }
 
+/*
+Initialize -> Initialize General logger
+
+[c] -> Passing config to seperate according to debug or release mode
+[D] -> Passing DLogger to generate LogHandler
+[R] -> Passing RLogger to generate LogHandler
+
+[return] -> returns Generated LogHandler
+*/
 func Initialize(c *config.Config, D *DLogger, R *RLogger) *LogHandler {
 	var d, r ILogHandler
 
@@ -36,6 +48,16 @@ func Initialize(c *config.Config, D *DLogger, R *RLogger) *LogHandler {
 	return &LogHandler{debug: &d, release: &r, config: c}
 }
 
+/*
+Error -> LogHandler error logger without callback
+
+	-> Checks whether error {nil} or {not}
+	-> Calls {logger} according to {flavor}
+
+[err] -> take parameter as error
+
+[return] -> returns tag with {error} or {nil} if error does not {exist}
+*/
 func (l LogHandler) Error(err error) error {
 	if l.config.Flavor == dev {
 		return (*l.debug).Error(err)
@@ -44,6 +66,17 @@ func (l LogHandler) Error(err error) error {
 	return (*l.release).Error(err)
 }
 
+/*
+ErrorWithCallback -> LogHandler error logger with callback
+
+	-> Checks whether error {nil} or {not}
+	-> Calls {logger} according to {flavor}
+
+[err] -> take parameter as error
+[f] -> callback method needs to be called if error {exist}
+
+[return] -> returns tag with {error} or {nil} if error does not {exist}
+*/
 func (l LogHandler) ErrorWithCallback(err error, f func()) error {
 	if l.config.Flavor == dev {
 		return (*l.debug).ErrorWithCallback(err, f)
@@ -52,6 +85,15 @@ func (l LogHandler) ErrorWithCallback(err error, f func()) error {
 	return (*l.release).ErrorWithCallback(err, f)
 }
 
+/*
+Info -> LogHandler info logger without callback
+
+	-> Calls {logger} according to {flavor}
+
+[msg] -> take string message as parameter
+
+[return] -> returns tag with {msg}
+*/
 func (l LogHandler) Info(msg string) string {
 	if l.config.Flavor == dev {
 		return (*l.debug).Info(msg)
@@ -60,6 +102,16 @@ func (l LogHandler) Info(msg string) string {
 	return (*l.release).Info(msg)
 }
 
+/*
+InfoWithCallback -> LogHandler info logger without callback
+
+	-> Calls {logger} according to {flavor}
+
+[msg] -> take string message as parameter
+[f] -> callback method needs to be called
+
+[return] -> returns tag with {msg}
+*/
 func (l LogHandler) InfoWithCallback(msg string, f func()) string {
 	if l.config.Flavor == dev {
 		return (*l.debug).InfoWithCallback(msg, f)
