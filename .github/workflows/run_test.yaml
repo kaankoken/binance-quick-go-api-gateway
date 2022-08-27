@@ -30,7 +30,6 @@ jobs:
 
       - name: Install protobuf
         uses: arduino/setup-protoc@v1
-        run: protoc --version 
           
       - name: Install grpc packages
         run: |
